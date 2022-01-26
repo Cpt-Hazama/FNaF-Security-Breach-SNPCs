@@ -1,0 +1,9 @@
+"VertexLitGeneric"
+{
+    "$basetexture"              "models/cpthazama/fnaf_sb/props/pizza_box"
+    "$bumpmap"                  "models/cpthazama/fnaf_sb/props/pizza_box_n"
+
+    "$nodecal"                  "1"
+
+    "$lightwarptexture"				"models/cpthazama/fnaf_sb/warp2"
+}

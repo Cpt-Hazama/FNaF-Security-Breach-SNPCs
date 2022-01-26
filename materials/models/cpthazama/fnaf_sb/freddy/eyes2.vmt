@@ -1,0 +1,32 @@
+"VertexLitGeneric"
+{
+    "$basetexture"              "models/cpthazama/fnaf_sb/freddy/eyes"
+    "$bumpmap"                  "models/cpthazama/fnaf_sb/freddy/eyes_n"
+    "$phongexponenttexture"     "models/cpthazama/fnaf_sb/freddy/eyes_exponent"
+
+    "$nodecal"                  "1"
+    "$translucent"              "1"
+
+	"$emissiveBlendEnabled" 		"1"
+    "$emissiveBlendTexture"   		"dev/null"
+    "$emissiveBlendBaseTexture"    	"models/cpthazama/fnaf_sb/freddy/eyes_e"
+    "$emissiveBlendFlowTexture"    	"dev/null"
+    "$emissiveBlendTint" 			"[1 1 1]"
+    "$emissiveBlendStrength" 		"5"
+    "$emissiveBlendScrollVector" 	"[0 0]"
+
+    "$ambientocclusion"         "0.7"
+    "$phong"                    "1"
+    "$phongboost"               "19.986979"
+    "$phongfresnelranges"       "[0.87 0.9 1]"
+    "$phongalbedotint"          "1"
+
+	"Proxies"
+	{
+		"IsNPC"
+		{
+			"scale" "1"
+			"resultvar" "$emissiveBlendEnabled"
+		}
+	}
+}

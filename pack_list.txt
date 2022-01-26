@@ -1,0 +1,35 @@
+Cosistency file
+
+Base Pack - {
+    lua/
+    materials/
+        freddy
+        lmm
+        monty
+    models/
+    sound/
+}
+
+Pack 1 - {
+    materials/
+        blob
+        burntrap
+        chica
+        custom
+        djmm
+        endo
+}
+
+Pack 2 - {
+    materials/
+        moondrop
+        roxy
+        vanny
+        weapons
+}
+
+Pack 3 - {
+    materials/
+        staff
+        vanessa
+}

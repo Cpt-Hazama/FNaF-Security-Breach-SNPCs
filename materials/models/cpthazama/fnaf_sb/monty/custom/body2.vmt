@@ -1,0 +1,16 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" 				"models/cpthazama/fnaf_sb/monty/custom/body"
+	"$bumpmap" 					"models/cpthazama/fnaf_sb/monty/body_n"
+    "$phongexponenttexture"     "models/cpthazama/fnaf_sb/monty/body_exponent"
+
+    "$nodecal"                  "1"
+    "$nocull"                   "1"
+    "$translucent"              "1"
+
+    "$ambientocclusion"         "0.7"
+    "$phong"                    "1"
+    "$phongboost"               "100"
+    "$phongfresnelranges"       "[0.87 0.9 1]"
+    "$phongalbedotint"          "1"
+}

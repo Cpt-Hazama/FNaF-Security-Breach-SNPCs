@@ -1,0 +1,54 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "nodraw"
+	"$nolod" 1
+	"$nomip" 1
+	"$ignorez" 1
+	"$translucent" 1
+	// "$vertexcolor" 1
+	// "$vertexalpha" 1
+
+	"$emissiveBlendEnabled" "1"
+    "$emissiveBlendTexture"    "models/cpthazama/fnaf_sb/noise6"
+    "$emissiveBlendBaseTexture"    "hud/fnaf/star_overlay"
+    "$emissiveBlendFlowTexture"    "models/cpthazama/fnaf_sb/djmm/rgb"
+	"$emissiveBlendTint" "[1 1 1]"
+    "$emissiveBlendStrength" "1"
+    "$emissiveBlendScrollVector" "[0 -0.1]"
+
+	"Proxies"
+	{
+		// "TextureScroll"
+		// {
+		// 	"texturescrollvar" "$emissiveBlendbaseTextureTransform"
+		// 	"texturescrollrate" "0.075"
+		// 	"texturescrollangle" "-90.0"
+		// }
+		"sine"
+		{
+			sineperiod	6.3
+			sinemin		0.25
+			sinemax		1
+			timeoffset	0
+			resultvar	"$emissiveBlendTint[0]"
+		}
+		"sine"
+		{
+			sineperiod	6.7
+			sinemin		0.25
+			sinemax		1
+			timeoffset	0
+			resultvar	"$emissiveBlendTint[1]"
+		}
+		"sine"
+		{
+			sineperiod	8.3
+			sinemin		0.25
+			sinemax		1
+			timeoffset	0
+			resultvar	"$emissiveBlendTint[2]"
+		}
+	}
+
+	"$lightwarptexture" "models/cpthazama/fnaf_sb/djmm/rgb"
+}
