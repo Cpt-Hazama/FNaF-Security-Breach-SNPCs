@@ -78,7 +78,7 @@ function SWEP:PrimaryAttack()
 	if owner:IsPlayer() then
 		self:SendWeaponAnim(VJ_PICK(self.AnimTbl_PrimaryFire))
 		timer.Simple(1,function()
-			if IsValid(self) && self:IsEquiped(owner) then
+			if IsValid(self) && self:IsEquiped(owner) && SERVER then
 				local broughtFreddy = VJ_FNAF_BringFreddy(owner)
 				local vm = owner:GetViewModel()
 				if broughtFreddy then
@@ -87,6 +87,14 @@ function SWEP:PrimaryAttack()
 				else
 					VJ_CreateSound(owner,"cpthazama/fnafsb/freddy/fx/sfx_freddy_call_unsuccesful.wav")
 					vm:SetSkin(2)
+					self.NextFreddySoundT = self.NextFreddySoundT or 0
+					if math.random(1,5) == 1 && CurTime() > self.NextFreddySoundT then
+						local snd = VJ_PICK({
+							"cpthazama/fnafsb/freddy/FREDDY_00065_GregoryGregory.ogg",
+						})
+						VJ_CreateSound(self,snd)
+						self.NextFreddySoundT = CurTime() +VJ_SoundDuration(snd) +math.random(2,8)
+					end
 				end
 				timer.Simple(0.5,function()
 					if IsValid(self) && self:IsEquiped(owner) then
@@ -96,7 +104,7 @@ function SWEP:PrimaryAttack()
 			end
 		end)
 	end
-	self:SetNextPrimaryFire(CurTime() +self.NextIdle_PrimaryAttack)
+	self:SetNextPrimaryFire(CurTime() +self.NextIdle_PrimaryAttack +0.1)
 	timer.Simple(self.NextIdle_PrimaryAttack, function() if IsValid(self) then self:DoIdleAnimation() end end)
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------

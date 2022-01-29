@@ -46,7 +46,7 @@ function ENT:Think()
 	if self.BeenEaten then return end
 	for _,v in pairs(ents.FindInSphere(self:GetPos(),800)) do
 		if v:IsNPC() && v.VJ_FNaF_IsChica then
-			if !IsValid(v:GetEnemy()) && !v:IsBusy() then
+			if !IsValid(v:GetEnemy()) && !v:IsBusy() && self.CurrentSchedule == nil then
 				self.NextIdleSoundT = CurTime() +math.Rand(3,8)
 				if !IsValid(v.Pizza) then
 					if v:GetPos():Distance(self:GetPos()) < 75 then

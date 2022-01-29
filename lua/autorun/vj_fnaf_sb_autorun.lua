@@ -130,6 +130,8 @@ if VJExists == true then
 		util.AddNetworkString("VJ_FNaF_FreddyScreen")
 		util.AddNetworkString("VJ_FNaF_GetLightness")
 		util.AddNetworkString("VJ_FNaF_Stinger")
+		util.AddNetworkString("VJ_FNaF_ChicaScream")
+		util.AddNetworkString("VJ_FNaF_FlashScreen")
 
 		function VJ_ControllerTest(ply,ent)
 			if IsValid(ply) && IsValid(ent) then
@@ -294,6 +296,8 @@ if VJExists == true then
 				return
 			end
 			self:StopAllCommonSounds()
+			self.LeapState = 0
+			self:SetVelocity(Vector(0,0,0))
 			self.NextIdleSoundT = CurTime() +math.Rand(self.NextSoundTime_Idle.a, self.NextSoundTime_Idle.b) *1.5
 			self:SetState(VJ_STATE_ONLY_ANIMATION_NOATTACK)
 			self.IsShocked = true
@@ -302,15 +306,15 @@ if VJExists == true then
 			end
 			self:SetEnemy(NULL)
 			self:VJ_ACT_PLAYACTIVITY("vjseq_shock_in",true,false,false,0,{OnFinish=function(interrupted,anim)
-				if interrupted then return end
+				-- if interrupted then return end
 				self:VJ_ACT_PLAYACTIVITY("vjseq_shock",true,false,false,0,{OnFinish=function(interrupted,anim)
-					if interrupted then return end
+					-- if interrupted then return end
 					if self.OnEndShock then
 						self:OnEndShock()
 					end
 					self:SetEnemy(NULL)
 					self:VJ_ACT_PLAYACTIVITY("vjseq_shock_out",true,false,false,0,{OnFinish=function(interrupted,anim)
-						if interrupted then return end
+						-- if interrupted then return end
 						self:SetState()
 						self.IsShocked = false
 						if self.OnShockEnded then
@@ -319,6 +323,13 @@ if VJExists == true then
 					end})
 				end})
 			end})
+		end
+
+		function VJ_FNaF_FlashScreen(ent)
+			if !ent:IsPlayer() then return end
+			net.Start("VJ_FNaF_FlashScreen")
+				net.WriteEntity(ent)
+			net.Send(ent)
 		end
 
 		function NPC:VJ_FNAF_Stinger(ent,snd)
@@ -408,6 +419,39 @@ if VJExists == true then
 			end
 
 			return IsValid(animatronic)
+		end
+
+		function NPC:VJ_FNAF_ChicaScreamAttack(dist,doDMG,checkDisp)
+			self:StopAllCommonSounds()
+			sound.Play("cpthazama/fnafsb/chica/fx/sfx_chicaVoicebox_screech_0" .. math.random(1,3) .. ".wav",self:GetPos(),150,100,CHAN_STATIC)
+			local dist = dist or 750
+			for _,v in pairs(ents.FindInSphere(self:GetPos(),dist)) do
+				if (v:IsNPC() or (v:IsPlayer() && v:Alive() && GetConVar("ai_ignoreplayers"):GetInt() == 0)) && v != self && self:GetClass() != v:GetClass() && !v:IsFlagSet(FL_NOTARGET) then
+					if checkDisp then
+						if self:Disposition(v) == D_LI then continue end
+					end
+					if v.VJ_FNaF_CanBeStunned then
+						v:VJ_FNaF_Stun(v)
+					end
+					local dist2 = self:GetPos():Distance(v:GetPos())
+					local mult = ((dist /dist2) -1)
+					if doDMG then
+						local dmginfo = DamageInfo()
+						dmginfo:SetDamage(math.Clamp(mult *45,1,v:Health()))
+						dmginfo:SetDamageType(DMG_DIRECT)
+						dmginfo:SetAttacker(self)
+						dmginfo:SetInflictor(self)
+						dmginfo:SetDamagePosition(v:GetPos() +v:OBBCenter())
+						v:TakeDamageInfo(dmginfo)
+					end
+					if !v:IsPlayer() then return end
+					local time = mult *1.5
+					self:VJ_DoSlowPlayer(v,70,90,time)
+					net.Start("VJ_FNaF_ChicaScream")
+						net.WriteEntity(v)
+					net.Send(v)
+				end
+			end
 		end
 
 		function NPC:VJ_FNAF_BringAlertedAllies(dist,ent) -- Dist is obsolete
@@ -666,6 +710,31 @@ if VJExists == true then
 			-- return view
 		-- end)
 
+		net.Receive("VJ_FNaF_FlashScreen",function(data)
+			local ply = net.ReadEntity()
+			if !IsValid(ply) then return end
+			local color = Color(255,255,255,255)
+			local durFade = 2
+			local durHold = 0.25
+			local fadeSc = color.a /durFade
+			local startFade = CurTime() +durHold
+			hook.Add("HUDPaint","VJ_FNaF_FlashScreen",function()
+				if LocalPlayer() == ply then
+					local alpha = CurTime() < startFade && color.a || math.Clamp(color.a -fadeSc *(CurTime() -startFade),0,color.a)
+					if alpha == 0 then
+						hook.Remove("HUDPaint","VJ_FNaF_FlashScreen")
+						return
+					end
+					surface.SetDrawColor(color.r,color.g,color.b,alpha)
+					surface.DrawRect(0,0,ScrW(),ScrH())
+
+					local div = (alpha /255)
+					DrawMotionBlur(0.1,div *4,0.01)
+					DrawBloom(1 -div,2,9,9,3,1,1,1,1)
+				end
+			end)
+		end)
+
 		local customOffsets = {
 			["npc_vj_fnafsb_burntrap"] = Vector(0,0,-6),
 			["npc_vj_fnafsb_endo"] = Vector(0,0,-6),
@@ -774,6 +843,43 @@ if VJExists == true then
 			ply.VJ_FNaF_StingerT = CurTime() +SoundDuration(snd) +1.5
 
 			surface.PlaySound(snd)
+		end)
+
+		net.Receive("VJ_FNaF_ChicaScream",function()
+			local ply = net.ReadEntity()
+
+			ply.VJ_FNaF_ChicaScreamT = ply.VJ_FNaF_ChicaScreamT or 0
+			ply.VJ_FNaF_ChicaRing = ply.VJ_FNaF_ChicaRing or CreateSound(ply,"cpthazama/fnafsb/common/ringing.wav")
+			-- if CurTime() < ply.VJ_FNaF_ChicaScreamT then
+			-- 	ply.VJ_FNaF_ChicaRing:Stop()
+			-- 	return
+			-- end
+
+			local time = 8
+			ply.VJ_FNaF_ChicaScreamT = CurTime() +time
+			ply.VJ_FNaF_ChicaRing:Play()
+
+			local hookName = "VJ_FNaF_ChicaScream_" .. ply:EntIndex()
+            hook.Add("RenderScreenspaceEffects",hookName,function()
+                if !IsValid(ply) or (IsValid(ply) && (ply:Health() <= 0 or ply.VJ_FNaF_ChicaScreamT < CurTime())) then
+                    hook.Remove("RenderScreenspaceEffects",hookName)
+					ply.VJ_FNaF_ChicaRing:ChangeVolume(0)
+					ply.VJ_FNaF_ChicaRing:Stop()
+					ply:SetEyeAngles(Angle(ply:EyeAngles().p,ply:EyeAngles().y,0))
+                    return
+                end
+
+				local remaining = ply.VJ_FNaF_ChicaScreamT -CurTime()
+				local div = (remaining /time)
+
+				local LP = LerpAngle(FrameTime() *2,ply:EyeAngles(),ply:EyeAngles() +AngleRand(-90 *div,90 *div))
+				LP[3] = ply:EyeAngles()[3]
+				ply:SetEyeAngles(LP)
+
+				ply.VJ_FNaF_ChicaRing:ChangeVolume(div)
+                DrawMotionBlur(0.1,div *2,0.01)
+				DrawBloom(1 -div,2,9,9,3,1,1,1,1)
+            end)
 		end)
 
 		hook.Add("PopulateToolMenu","VJ_ADDTOMENU_FNAF_SB", function()

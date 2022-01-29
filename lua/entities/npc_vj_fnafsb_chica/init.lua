@@ -189,6 +189,7 @@ function ENT:CustomOnInitialize()
 	self.EatLoop = CreateSound(self,"cpthazama/fnafsb/chica/eat_loop.wav")
 	self.NextPizzaSmellT = CurTime()
 	self.NextPizzaSeeT = CurTime()
+	self.NextScreamT = CurTime()
 
 	self:SetCollisionBounds(Vector(13,13,80),Vector(-13,-13,0))
 end
@@ -223,6 +224,18 @@ function ENT:CustomOnThink()
 		self.NextIdleTime = 0
 		self.EatLoop:Stop()
 		self:SetState()
+	end
+end
+---------------------------------------------------------------------------------------------------------------------------------------------
+function ENT:CustomAttack()
+	local ent = self:GetEnemy()
+	local anim = self:GetActivity()
+	local dist = self.NearestPointToEnemyDistance
+	local cont = self.VJ_TheController
+
+	if (IsValid(cont) && cont:KeyDown(IN_ATTACK2) or !IsValid(cont) && IsValid(ent) && dist > 180 && dist <= 700 && self:Visible(ent) && math.random(1,20) == 1) && !self:IsBusy() && CurTime() > self.NextScreamT then
+		self:VJ_FNAF_ChicaScreamAttack(nil,true,true)
+		self.NextScreamT = CurTime() +math.Rand(12,20)
 	end
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------

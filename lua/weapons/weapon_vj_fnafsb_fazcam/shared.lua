@@ -92,6 +92,8 @@ function SWEP:CustomOnPrimaryAttack_BeforeShoot()
 			self.Owner:ConCommand("jpeg")
 		end
 
+		VJ_FNaF_FlashScreen(self.Owner)
+
 		for _,v in pairs(ents.FindInSphere(vPos,400)) do
 			local vSight = v.GetSightDirection && v:GetSightDirection() or v:GetForward()
 			if v.VJ_FNaF_CanBeStunned && !v.VJ_FNaF_CamProtection && (vForward:Dot((v:GetPos() -vPos):GetNormalized()) > math.cos(math.rad(80))) && (vSight:Dot((vPos -v:GetPos()):GetNormalized()) > math.cos(math.rad(80))) then
@@ -99,17 +101,22 @@ function SWEP:CustomOnPrimaryAttack_BeforeShoot()
 			end
 		end
 
-		timer.Simple(self.Primary.Delay -SoundDuration("cpthazama/fnafsb/weapons/sfx_fazcam_recharge_01.wav"),function()
+		local delay = self.Primary.Delay
+		timer.Simple(delay -SoundDuration("cpthazama/fnafsb/weapons/sfx_fazcam_recharge_01.wav"),function()
 			if IsValid(self) then
 				VJ_CreateSound(self,"cpthazama/fnafsb/weapons/sfx_fazcam_recharge_0" .. math.random(1,3) .. ".wav")
 			end
 		end)
-		timer.Simple(self.Primary.Delay,function()
+		timer.Simple(delay,function()
 			if IsValid(self) then
 				self:SetClip1(self.Primary.ClipSize)
 			end
 		end)
 	end
+end
+---------------------------------------------------------------------------------------------------------------------------------------------
+function SWEP:CustomOnThink()
+	self.Primary.Delay = IsValid(self.Owner) && self.Owner:HasGodMode() && 3 or 20
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
 function SWEP:Reload()

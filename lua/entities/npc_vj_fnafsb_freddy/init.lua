@@ -116,6 +116,7 @@ function ENT:Controller_Initialize(ply)
     net.Send(ply)
 
 	function self.VJ_TheControllerEntity:CustomOnStopControlling()
+		opt1.Gregory = NULL
 		net.Start(nwName)
 			net.WriteBool(true)
 			net.WriteEntity(opt1)
@@ -148,6 +149,7 @@ function ENT:CustomOnInitialize()
 	self.NextControlT = CurTime()
 	self.Grergory = NULL
 	self.ToUnlock = NULL
+	self.NextScreamT = CurTime()
 
 	self:SetCollisionBounds(Vector(13,13,84),Vector(-13,-13,0))
 
@@ -280,6 +282,9 @@ function ENT:CustomOnAlert(ent)
 		elseif ent:GetClass() == "npc_vj_fnafsb_monty" or ent:GetClass() == "npc_vj_fnafsb_monty_shattered" then
 			self:PlaySoundSystem("Alert", {"cpthazama/fnafsb/freddy/FREDDY_00165b.ogg"})
 			return
+		elseif ent:GetClass() == "npc_vj_fnafsb_vanessa" then
+			self:PlaySoundSystem("Alert", {"cpthazama/fnafsb/freddy/FREDDY_00010_thatIs_Pref.ogg"})
+			return
 		end
 	end
 end
@@ -297,6 +302,16 @@ function ENT:SetMode(m)
 		self.SoundTbl_CombatIdle = {}
 		self.SoundTbl_OnPlayerSight = {
 			"cpthazama/fnafsb/freddy/FREDDY_00051_goodNews_Pref.ogg",
+			"cpthazama/fnafsb/freddy/FREDDY_00006_thereYou_Pref.ogg",
+			"cpthazama/fnafsb/freddy/FREDDY_00006_thereYou_Pref.ogg",
+			"cpthazama/fnafsb/freddy/FREDDY_00007_scanningComplete_Pref.ogg",
+			"cpthazama/fnafsb/freddy/FREDDY_00016_thereIs_Pref.ogg",
+			"cpthazama/fnafsb/freddy/FREDDY_00020_iKnow_Pref.ogg",
+			"cpthazama/fnafsb/freddy/FREDDY_00245.ogg",
+			"cpthazama/fnafsb/freddy/FREDDY_00244.ogg",
+			"cpthazama/fnafsb/freddy/FREDDY_00240.ogg",
+			"cpthazama/fnafsb/freddy/FREDDY_00052_doNot_Pref.ogg",
+			"cpthazama/fnafsb/freddy/FREDDY_00061a.ogg",
 		}
 		self.SoundTbl_LostEnemy = {
 			"cpthazama/fnafsb/freddy/FREDDY_00128a.ogg",
@@ -469,6 +484,18 @@ function ENT:CustomOnThink()
 				self:SetState()
 			end})
 		end
+	end
+end
+---------------------------------------------------------------------------------------------------------------------------------------------
+function ENT:CustomAttack()
+	local ent = self:GetEnemy()
+	local anim = self:GetActivity()
+	local dist = self.NearestPointToEnemyDistance
+	local cont = self.VJ_TheController
+
+	if (IsValid(cont) && cont:KeyDown(IN_ATTACK2) or !IsValid(cont) && IsValid(ent) && dist > 180 && dist <= 700 && self:Visible(ent) && math.random(1,20) == 1) && !self:IsBusy() && CurTime() > self.NextScreamT then
+		self:VJ_FNAF_ChicaScreamAttack(nil,false,false)
+		self.NextScreamT = CurTime() +15
 	end
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------

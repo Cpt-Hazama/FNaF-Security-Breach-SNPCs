@@ -72,6 +72,7 @@ function SWEP:SetLight(b)
 	local owner = self:GetOwner()
 	if !owner:IsPlayer() then return end
 	if b then
+		if IsValid(self.Light) then return end
 		local envLight = ents.Create("env_projectedtexture")
 		envLight:SetLocalPos(owner:EyePos())
 		envLight:SetLocalAngles(owner:EyeAngles())
@@ -90,10 +91,15 @@ function SWEP:SetLight(b)
 
 		local hookName = "VJ_FNaF_Light_" .. self:EntIndex()
 		hook.Add("Think",hookName,function()
-			if !IsValid(envLight) then
+			if !IsValid(self) or !IsValid(envLight) then
 				hook.Remove("Think",hookName)
 				return
 			end
+			-- if envLight.DoRemove then
+			-- 	envLight:Remove()
+			-- 	hook.Remove("Think",hookName)
+			-- 	return
+			-- end
 			local FT = FrameTime() *35
 			-- local pos = LerpVector(FT,envLight:GetPos(),owner:GetShootPos() +owner:GetAimVector() *40 +Vector(0,0,-10))
 			-- local ang = LerpAngle(FT,envLight:GetAngles(),owner:EyeAngles())
@@ -105,6 +111,15 @@ function SWEP:SetLight(b)
 			envLight:SetPos(pos)
 			envLight:SetAngles(ang)
 		end)
+		-- hook.Add("OnPlayerPhysicsPickup",hookName,function(ply)
+		-- 	if !IsValid(self) or !IsValid(envLight) then
+		-- 		hook.Remove("OnPlayerPhysicsPickup",hookName)
+		-- 		return
+		-- 	end
+		-- 	envLight.DoRemove = true
+		-- 	SafeRemoveEntity(envLight)
+		-- 	SafeRemoveEntity(ply:GetActiveWeapon().Light)
+		-- end)
 
 		self.Light = envLight
 	else
@@ -119,6 +134,10 @@ end
 function SWEP:CustomOnHolster(newWep)
 	self:SetLight(false)
 	return true
+end
+---------------------------------------------------------------------------------------------------------------------------------------------
+function SWEP:CustomOnRemove()
+	self:SetLight(false)
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
 function SWEP:CustomOnInitialize()
@@ -222,8 +241,13 @@ function SWEP:ChangeFireRate()
 	self.NPC_NextPrimaryFire = int
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
+function SWEP:OnThink()
+	self:SetSkin(0)
+end
+---------------------------------------------------------------------------------------------------------------------------------------------
 function SWEP:CustomOnThink()
 	local owner = self:GetOwner()
+	self:OnThink()
 	if CLIENT then
 		-- if owner:IsPlayer() then
 		-- 	local dlight = DynamicLight(owner:EntIndex() )
@@ -290,8 +314,8 @@ function SWEP:CalcViewModelView(vm, OldEyePos, OldEyeAng, EyePos, EyeAng) -- Cre
 	local speed_mul = 3
 	if self:GetOwner():IsOnGround() && realspeed > 0.1 then
 		local bobspeed = math.Clamp(realspeed*1.1, 0, 1)
-		local bob_x = math.sin(bob_x_val*1*speed)*0.2*bobspeed
-		local bob_y = math.cos(bob_y_val*1*speed)*0.1*bobspeed
+		local bob_x = math.sin(bob_x_val*1*speed) *0.1 *bobspeed
+		local bob_y = math.cos(bob_y_val*1*speed) *0.125 *bobspeed
 		EyePos = EyePos + EyeAng:Right()*bob_x*speed_mul *0.65
 		EyePos = EyePos + EyeAng:Up() *bob_y *speed_mul *1.5
 	end

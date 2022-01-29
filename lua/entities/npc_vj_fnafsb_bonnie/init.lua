@@ -162,7 +162,7 @@ function ENT:CustomAttack()
 	else
 		if self.LeapState == 1 then
 			self.LeapState = 0
-			if self:GetActivity() != ACT_MELEE_ATTACK1 then
+			if !self:IsBusy() && self:GetActivity() != ACT_MELEE_ATTACK1 then
 				self:SetState()
 				self:VJ_ACT_PLAYACTIVITY(ACT_LAND,true,false,false)
 			end

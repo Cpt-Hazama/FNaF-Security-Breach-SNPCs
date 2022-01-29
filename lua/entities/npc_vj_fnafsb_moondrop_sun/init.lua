@@ -352,7 +352,7 @@ function ENT:CustomOnThink()
 		local isFlying = self.MovementType == VJ_MOVETYPE_AERIAL
 		if IsValid(ent) then
 			local dist = self.NearestPointToEnemyDistance
-			if ((IsValid(cont) && cont:KeyReleased(IN_ATTACK2)) or (!IsValid(cont) && dist > 700 && math.abs(ent:GetPos().z -self:GetPos().z) > 300 && math.random(1,20) == 1)) && !isFlying && CurTime() > self.NextChangeMovementT then
+			if ((IsValid(cont) && cont:KeyReleased(IN_ATTACK2)) or (!IsValid(cont) && dist > 800 && math.abs(ent:GetPos().z -self:GetPos().z) > 300 && math.random(1,20) == 1)) && !isFlying && CurTime() > self.NextChangeMovementT then
 				if self:IsHittingSky() then return end
 				self:DoChangeMovementType(VJ_MOVETYPE_AERIAL)
 				self:StopMoving()

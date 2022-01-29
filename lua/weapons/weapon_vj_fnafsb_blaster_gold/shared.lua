@@ -20,3 +20,7 @@ function SWEP:PreDrawViewModel(vm, weapon, ply)
 	vm:SetSkin(1)
 	self:SetSkin(1)
 end
+---------------------------------------------------------------------------------------------------------------------------------------------
+function SWEP:OnThink()
+	self:SetSkin(1)
+end
