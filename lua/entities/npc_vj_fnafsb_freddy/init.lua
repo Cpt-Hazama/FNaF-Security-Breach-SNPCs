@@ -131,7 +131,7 @@ function ENT:GetSightDirection()
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
 function ENT:CustomOnPlayerSight(ply)
-	if !self:IsBusy() then
+	if !self:IsBusy() && !self:IsMoving() then
 		self:VJ_ACT_PLAYACTIVITY("wave",true,false,false)
 	end
 end

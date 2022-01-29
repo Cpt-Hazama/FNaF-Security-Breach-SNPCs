@@ -35,11 +35,11 @@ if VJExists == true then
 	local allowNPCs = true
 	if re1 == false or re2 == false or re3 == false then
 		if SERVER then
-			timer.Create("FNAFSBMissing",1,0,function()
+			timer.Create("FNAFSBMissing",5,0,function()
 				if game.SinglePlayer() then
-					Entity(1):ChatPrint("[FNaF SB SNPCs] - Imagine not subscribing to the required items. Enjoy the spam :) You can stop this by actually downloading the required items like Steam warns you before you can press Subscribe.")
+					Entity(1):ChatPrint("[FNaF SB SNPCs] - Missing resources detected! Either you didn't download the required addons, disabled the required addons, or they failed to download/install. Please verify that you have the required addons installed and enabled to prevent this message from appearing!")
 				end
-				print("[FNaF SB SNPCs] - Imagine not subscribing to the required items. Enjoy the spam :) You can stop this by actually downloading the required items like Steam warns you before you can press Subscribe.")
+				print("[FNaF SB SNPCs] - Missing resources detected! Either you didn't download the required addons, disabled the required addons, or they failed to download/install. Please verify that you have the required addons installed and enabled to prevent this message from appearing!")
 			end)
 		end
 		allowNPCs = false
@@ -329,6 +329,87 @@ if VJExists == true then
 			net.Send(ent)
 		end
 
+		local str1111 = "1111"
+		local str1 = "1"
+		local string_sub = string.sub
+		function VJ_FNaF_CheckAllFourSides(entCheck, checkDist, returnPos, sides)
+			checkDist = checkDist or 200
+			sides = sides or str1111
+			local result = returnPos == true and {} or {Forward=false, Backward=false, Right=false, Left=false}
+			local i = 0
+			local myPos = entCheck:GetPos()
+			local myPosCentered = entCheck:GetPos() + entCheck:OBBCenter()
+			local positions = {
+				string_sub(sides, 1, 1) == str1 and entCheck:GetForward() or 0, 
+				string_sub(sides, 2, 2) == str1 and -entCheck:GetForward() or 0,
+				string_sub(sides, 3, 3) == str1 and entCheck:GetRight() or 0,
+				string_sub(sides, 4, 4) == str1 and -entCheck:GetRight() or 0
+			}
+			for _, v in pairs(positions) do
+				i = i + 1
+				if v == 0 then continue end -- If 0 then we have the tag to skip this!
+				local tr = util.TraceLine({
+					start = myPosCentered,
+					endpos = myPosCentered +v *checkDist,
+					filter = entCheck
+				})
+				local hitPos = tr.HitPos +tr.HitNormal *22
+				local dist = entCheck:GetPos():Distance(hitPos)
+				if (dist <= checkDist && dist > checkDist *0.25) or !tr.Hit then
+					if returnPos == true then
+						if !tr.Hit then
+							hitPos = myPosCentered +v *checkDist
+						end
+						hitPos.z = myPos.z
+						result[#result + 1] = hitPos
+					elseif i == 1 then
+						result.Forward = true
+					elseif i == 2 then
+						result.Backward = true
+					elseif i == 3 then
+						result.Right = true
+					elseif i == 4 then
+						result.Left = true
+					end
+				end
+			end
+			return result
+		end
+
+		function VJ_FNAF_BringFreddy(ent)
+			if !IsValid(ent) then return end
+			local animatronic = false
+			for _,v in RandomPairs(ents.GetAll()) do
+				if v:IsNPC() && v.VJ_FNaF_IsFreddy && !IsValid(v:GetEnemy()) && !v:Visible(ent) && v:DoRelationshipCheck(ent) != true && !IsValid(v.Gregory) && v:GetPos():Distance(ent:GetPos()) > 600 then
+					animatronic = v
+					break
+				end
+			end
+
+			if animatronic then
+				local moveCheck = VJ_PICK(VJ_FNaF_CheckAllFourSides(ent, 1000, true, "0111"))
+				-- local tr = util.TraceHull({
+				-- 	start = ent:GetPos(),
+				-- 	endpos = ent:GetPos() +ent:GetForward() *-500,
+				-- 	filter = {ent,self},
+				-- 	mins = ent:OBBMins(),
+				-- 	maxs = ent:OBBMaxs(),
+				-- 	mask = MASK_SHOT_HULL
+				-- })
+				-- if tr.HitPos:Distance(ent:GetPos()) > 80 then
+				if moveCheck then
+					animatronic:SetPos(moveCheck)
+					animatronic:SetAngles(Angle(0,(ent:GetPos() -animatronic:GetPos()):Angle().y,0))
+					animatronic:SetTarget(ent)
+					animatronic:VJ_TASK_GOTO_TARGET("TASK_RUN_PATH")
+				else
+					animatronic = NULL
+				end
+			end
+
+			return IsValid(animatronic)
+		end
+
 		function NPC:VJ_FNAF_BringAlertedAllies(dist,ent) -- Dist is obsolete
 			if !IsValid(ent) then return end
 			local dist = GetConVar("vj_fnaf_teleportdistance"):GetInt()
@@ -424,6 +505,11 @@ if VJExists == true then
 						end
 						if IsValid(self) then
 							self.InAttack = false
+							if IsValid(hitEnt) then
+								hitEnt:Freeze(false)
+								hitEnt:DrawViewModel(true)
+								hitEnt:RemoveFlags(FL_NOTARGET)
+							end
 						end
 						hook.Remove("Think",hookName)
 						return
@@ -519,6 +605,10 @@ if VJExists == true then
 							hitEnt:Kill()
 						elseif IsValid(self) then
 							self.InAttack = false
+							if IsValid(hitEnt) then
+								hitEnt:Freeze(false)
+								hitEnt:DrawViewModel(true)
+							end
 						end
 						hook.Remove("Think",hookName)
 						return
