@@ -16,8 +16,8 @@ ENT.VJC_Data = {
 	FirstP_Bone = "Head_jnt", -- If left empty, the base will attempt to calculate a position for first person
 	FirstP_Offset = Vector(8, 0, 0), -- The offset for the controller when the camera is in first person
 	FirstP_ShrinkBone = false, -- Should the bone shrink? Useful if the bone is obscuring the player's view
-	FirstP_UseBoneAng = true, -- Should the camera's angle be affected by the bone's angle?
-	FirstP_BoneAngAdjust = 0, -- How much should the camera's angle be rotated by? (Useful for weird bone angles, this is the roll angle)
+	FirstP_CameraBoneAng = 3, -- Should the camera's angle be affected by the bone's angle?
+	FirstP_CameraBoneAng_Offset = 0, -- How much should the camera's angle be rotated by? (Useful for weird bone angles, this is the roll angle)
 }
 
 ENT.Bleeds = false
@@ -74,6 +74,7 @@ function ENT:Controller_Initialize(ply)
 		net.WriteEntity(ply)
 		net.WriteEntity(opt3)
     net.Send(ply)
+	self.AnimTbl_Run = {ACT_SPRINT}
 
 	function self.VJ_TheControllerEntity:CustomOnStopControlling()
 		net.Start(nwName)
@@ -83,6 +84,7 @@ function ENT:Controller_Initialize(ply)
 			net.WriteEntity(ply)
 			net.WriteEntity(opt3)
 		net.Send(ply)
+		opt1.AnimTbl_Run = {ACT_RUN}
 	end
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -98,7 +100,9 @@ function ENT:CustomOnInitialize()
 	self.NextPlayDeadT = CurTime() +math.random(8,25)
 	self.EyeFX = {}
 
-	self:SetCollisionBounds(Vector(13,13,80),Vector(-13,-13,0))
+	if !IsFNaFGamemode() then
+		self:SetCollisionBounds(Vector(13,13,80),Vector(-13,-13,0))
+	end
 
 	if self.EndoType == 1 then
 		self.VJ_NPC_Class = {"CLASS_FNAF_ANIMATRONIC_BLOB"}

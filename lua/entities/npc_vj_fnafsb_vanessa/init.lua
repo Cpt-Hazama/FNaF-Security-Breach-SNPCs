@@ -18,8 +18,8 @@ ENT.VJC_Data = {
 	FirstP_Bone = "Head_jnt",-- If left empty,the base will attempt to calculate a position for first person
 	FirstP_Offset = Vector(8,0,0),-- The offset for the controller when the camera is in first person
 	FirstP_ShrinkBone = false,-- Should the bone shrink? Useful if the bone is obscuring the player"s view
-	FirstP_UseBoneAng = true, -- Should the camera's angle be affected by the bone's angle?
-	FirstP_BoneAngAdjust = 0, -- How much should the camera's angle be rotated by? (Useful for weird bone angles, this is the roll angle)
+	FirstP_CameraBoneAng = 3, -- Should the camera's angle be affected by the bone's angle?
+	FirstP_CameraBoneAng_Offset = 0, -- How much should the camera's angle be rotated by? (Useful for weird bone angles, this is the roll angle)
 }
 
 ENT.BloodColor = "Red"
@@ -181,11 +181,11 @@ function ENT:CustomOnInitialize()
 	local glow1 = ents.Create("env_sprite")
 	glow1:SetKeyValue("model","sprites/light_ignorez.vmt")
 	glow1:SetKeyValue("scale","2")
-	glow1:SetKeyValue("rendermode","5")
+	glow1:SetKeyValue("rendermode","9")
 	glow1:SetKeyValue("rendercolor","255 255 255")
 	glow1:SetKeyValue("spawnflags","0.1")
 	glow1:SetParent(self)
-	envLight:SetOwner(self)
+	glow1:SetOwner(self)
 	glow1:Fire("SetParentAttachment","flashlight1",0)
 	glow1:Spawn()
 	self:DeleteOnRemove(glow1)
@@ -197,7 +197,7 @@ function ENT:CustomOnInitialize()
 	glowLight:SetLocalAngles(self:GetAngles())
 	glowLight:Fire("Color", "255 255 255")
 	glowLight:SetParent(self)
-	envLight:SetOwner(self)
+	glowLight:SetOwner(self)
 	glowLight:Spawn()
 	glowLight:Fire("TurnOn","",0)
 	glowLight:Fire("SetParentAttachment","flashlight1",0)

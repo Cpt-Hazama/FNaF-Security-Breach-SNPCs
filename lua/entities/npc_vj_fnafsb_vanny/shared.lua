@@ -38,6 +38,7 @@ if CLIENT then
                     closestDist = dist
                 end
             end
+            if ply.IsControlingNPC && ply.VJCE_NPC.VJ_FNaF_UniqueAnimatronic then return end
             if !IsValid(vanny) then ply.VJ_FNaF_Vanny_Threshold = 0 return end
             local FT = FrameTime() *3
             local dist = ply:GetPos():Distance(vanny:GetPos())

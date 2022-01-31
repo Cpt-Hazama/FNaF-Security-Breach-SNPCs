@@ -21,8 +21,8 @@ ENT.VJC_Data = {
 	FirstP_Bone = "Head5_jnt", -- If left empty, the base will attempt to calculate a position for first person
 	FirstP_Offset = Vector(8, -1, -20), -- The offset for the controller when the camera is in first person
 	FirstP_ShrinkBone = false, -- Should the bone shrink? Useful if the bone is obscuring the player's view
-	FirstP_UseBoneAng = true, -- Should the camera's angle be affected by the bone's angle?
-	FirstP_BoneAngAdjust = 180, -- How much should the camera's angle be rotated by? (Useful for weird bone angles, this is the roll angle)
+	FirstP_CameraBoneAng = 3, -- Should the camera's angle be affected by the bone's angle?
+	FirstP_CameraBoneAng_Offset = 180, -- How much should the camera's angle be rotated by? (Useful for weird bone angles, this is the roll angle)
 }
 
 ENT.Bleeds = false

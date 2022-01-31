@@ -108,6 +108,34 @@ function SWEP:PrimaryAttack()
 	timer.Simple(self.NextIdle_PrimaryAttack, function() if IsValid(self) then self:DoIdleAnimation() end end)
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
+function SWEP:SecondaryAttack()
+	if (self:GetNextSecondaryFire() > CurTime()) then return end
+	if !IsFNaFGamemode() then return end
+	local owner = self:GetOwner()
+	local tr = owner:GetEyeTrace()
+	local ent = tr.Entity
+	if IsValid(ent) && ent:GetPos():Distance(owner:GetPos()) <= 60 && !ent:IsNPC() && !ent:IsPlayer() && ent:Health() > 0 then
+		owner:ViewPunch(Angle(math.Rand(-2,-4),math.Rand(-1,1),math.Rand(-1,1)))
+		ent:TakeDamage(math.random(2,5),owner,owner)
+		VJ_CreateSound(owner,"physics/body/body_medium_impact_hard" .. math.random(1,6) .. ".wav",75)
+	end
+
+	self:SetNextSecondaryFire(CurTime() +1)
+end
+---------------------------------------------------------------------------------------------------------------------------------------------
+function SWEP:CalcView(ply,pos,ang,fov)
+	if !IsFNaFGamemode() then return pos, ang, fov end
+	if ply != self.Owner then return pos, ang, fov end
+
+	local realspeed = ply:GetVelocity():Length2D() /ply:GetRunSpeed()
+	local bobspeed = math.Clamp(realspeed *1.1, 0, 1)
+	local speed = math.Clamp(ply:GetVelocity():Length2DSqr() /ply:GetRunSpeed(), 0.25, 1)
+	local bob_x = math.sin((CurTime() *6) *speed *1.25) *speed *bobspeed
+	ang[3] = bob_x *1.35
+
+	return pos, ang, fov
+end
+---------------------------------------------------------------------------------------------------------------------------------------------
 function SWEP:Reload()
 	return false
 end

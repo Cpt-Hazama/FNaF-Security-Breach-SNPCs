@@ -16,8 +16,8 @@ ENT.VJC_Data = {
 	FirstP_Bone = "Head_jnt", -- If left empty, the base will attempt to calculate a position for first person
 	FirstP_Offset = Vector(8, 0, 0), -- The offset for the controller when the camera is in first person
 	FirstP_ShrinkBone = false, -- Should the bone shrink? Useful if the bone is obscuring the player's view
-	FirstP_UseBoneAng = true, -- Should the camera's angle be affected by the bone's angle?
-	FirstP_BoneAngAdjust = 0, -- How much should the camera's angle be rotated by? (Useful for weird bone angles, this is the roll angle)
+	FirstP_CameraBoneAng = 3, -- Should the camera's angle be affected by the bone's angle?
+	FirstP_CameraBoneAng_Offset = 0, -- How much should the camera's angle be rotated by? (Useful for weird bone angles, this is the roll angle)
 }
 
 ENT.Bleeds = false
@@ -63,6 +63,14 @@ ENT.SoundTbl_FootStep = {
 	"cpthazama/fnafsb/endo/fly_endo_walk_06.wav",
 	"cpthazama/fnafsb/endo/fly_endo_walk_07.wav",
 	"cpthazama/fnafsb/endo/fly_endo_walk_08.wav",
+}
+ENT.SoundTbl_FootStepAdd = {
+	"cpthazama/fnafsb/roxy/fx/fly_roxy_shattered_add_01.wav",
+	"cpthazama/fnafsb/roxy/fx/fly_roxy_shattered_add_02.wav",
+	"cpthazama/fnafsb/roxy/fx/fly_roxy_shattered_add_03.wav",
+	"cpthazama/fnafsb/roxy/fx/fly_roxy_shattered_add_04.wav",
+	"cpthazama/fnafsb/roxy/fx/fly_roxy_shattered_add_05.wav",
+	"cpthazama/fnafsb/roxy/fx/fly_roxy_shattered_add_06.wav"
 }
 ENT.SoundTbl_Idle = {
 	"cpthazama/fnafsb/burntrap/ICanTasteFear.ogg",
@@ -152,7 +160,9 @@ function ENT:CustomOnInitialize()
 	self.InAttack = false
 	self.NextDamageT = 0
 
-	self:SetCollisionBounds(Vector(13,13,82),Vector(-13,-13,0))
+	if !IsFNaFGamemode() then
+		self:SetCollisionBounds(Vector(13,13,82),Vector(-13,-13,0))
+	end
 	
 	for i = 1,2 do
 		local att = i == 2 && "eyeR" or "eyeL"
@@ -179,6 +189,7 @@ end
 function ENT:CustomOnAcceptInput(key,activator,caller,data)
 	if key == "step" then
 		VJ_EmitSound(self,self.SoundTbl_FootStep,75,math.random(90,110))
+		VJ_EmitSound(self,self.SoundTbl_FootStepAdd,75,math.random(90,110))
 		VJ_EmitSound(self,"physics/flesh/flesh_squishy_impact_hard1.wav",60,math.random(90,120))
 		local servo = math.random(1,14)
 		VJ_EmitSound(self,"cpthazama/fnafsb/chica/fx/sfx_chica_servo_short_" .. (servo < 10 && ("0" .. servo) or servo) .. ".wav",80,math.random(90,110))

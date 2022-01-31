@@ -127,6 +127,19 @@ function SWEP:CustomOnPrimaryAttackEffects()
 	return false
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
+function SWEP:CalcView(ply,pos,ang,fov)
+	if !IsFNaFGamemode() then return pos, ang, fov end
+	if ply != self.Owner then return pos, ang, fov end
+
+	local realspeed = ply:GetVelocity():Length2D() /ply:GetRunSpeed()
+	local bobspeed = math.Clamp(realspeed *1.1, 0, 1)
+	local speed = math.Clamp(ply:GetVelocity():Length2DSqr() /ply:GetRunSpeed(), 0.25, 1)
+	local bob_x = math.sin((CurTime() *6) *speed *1.25) *speed *bobspeed
+	ang[3] = bob_x *1.35
+
+	return pos, ang, fov
+end
+---------------------------------------------------------------------------------------------------------------------------------------------
 function SWEP:CalcViewModelView(ViewModel, OldEyePos, OldEyeAng, EyePos, EyeAng) -- Credits to Rex for the sway code, he did a really good job on it. Used without permission but he loves Daddy so I'm sure he won't mind ;)
 	local EyePos, EyeAng = self:GetViewModelPosition(OldEyePos, OldEyeAng)
 	local ply = self:GetOwner()

@@ -21,12 +21,56 @@ if VJExists == true then
 		resource.AddWorkshop("2725352362") -- Pack #3
 	end
 
-	local mdlDir = "models/cpthazama/fnaf_sb/"
-	for _,v in pairs(file.Find(mdlDir .. "*.mdl","GAME")) do
-		util.PrecacheModel(mdlDir .. v)
-	end
-	for _,v in pairs(file.Find(mdlDir .. "/custom/*.mdl","GAME")) do
-		util.PrecacheModel(mdlDir .. v)
+	if GetConVar("mat_dxlevel"):GetInt() >= 90 /*&& GetConVar("gmod_mcore_test"):GetInt() == 1*/ then -- Since DXLevel is a var automatically set by GMod based on your PC specs, this is a good and the only way to detect that someone has a bad setup.
+		local mdlDir = "models/cpthazama/fnaf_sb/"
+		local tblCache = {Main={}, Custom={}}
+		local startTime = SysTime()
+		for _,v in pairs(file.Find(mdlDir .. "*.mdl","GAME")) do
+			-- util.PrecacheModel(mdlDir .. v)
+			table.insert(tblCache.Main, mdlDir .. v)
+		end
+		for _,v in pairs(file.Find(mdlDir .. "/custom/*.mdl","GAME")) do
+			-- util.PrecacheModel(mdlDir .. v)
+			table.insert(tblCache.Custom, mdlDir .. "custom/" .. v)
+		end
+		for i,v in pairs(tblCache.Main) do
+			timer.Simple(0.25 *i,function()
+				-- print("Caching " .. v)
+				util.PrecacheModel(v)
+				if i == #tblCache.Main then
+					tblCache.Main = {}
+					if CLIENT then
+						print("Finished caching main directory models!")
+						print("Total time to cache models: " .. (SysTime() -startTime) .. " seconds")
+					end
+				end
+			end)
+		end
+		for i,v in pairs(tblCache.Custom) do
+			timer.Simple(0.25 *i,function()
+				-- print("Caching " .. v)
+				util.PrecacheModel(v)
+				if i == #tblCache.Custom then
+					tblCache.Custom = {}
+					if CLIENT then
+						print("Finished caching custom directory models!")
+						print("Total time to cache custom directory models: " .. (SysTime() -startTime) .. " seconds")
+					end
+				end
+			end)
+		end
+		-- print("Successfully cached all models for " .. PublicAddonName .. "!")
+	else
+		print("Failed to cached models for " .. PublicAddonName .. ", PC specs are too low!")
+		if CLIENT then
+			hook.Add("Initialize","VJ_FNaF_GraphicsWarning",function()
+				local red = Color(255,0,0)
+				timer.Simple(7,function()
+					chat.AddText(red,"WARNING: Your PC specs/graphics settings are very low and aren't optimized to use the FNaF Security Breach mod.")
+					chat.AddText(red,"You are likely to experience crashes/extreme lag at this point, some pre-loading features of the mod have been disabled when this was detected to prevent a loading crash.")
+				end)
+			end)
+		end
 	end
 
 	local re1 = file.Exists("lua/autorun/vj_fnaf_sb_1.lua","GAME")
@@ -122,6 +166,27 @@ if VJExists == true then
 		end
 
 		return duration
+	end
+
+	function IsFNaFGamemode()
+		if #ents.FindByClass("sent_vj_fnafsb_gamemode") >= 1 then
+			return true
+		end
+		return false
+	end
+
+	function InFNaFGamemode()
+		if #ents.FindByClass("sent_vj_fnafsb_gamemode") > 1 then
+			return true
+		end
+		return false
+	end
+
+	function GetFNaFGamemode()
+		if InFNaFGamemode() then
+			return ents.FindByClass("sent_vj_fnafsb_gamemode")[1]
+		end
+		return false
 	end
 
 	if SERVER then
@@ -498,8 +563,13 @@ if VJExists == true then
 				local hookName = "VJ_FNaF_DeathScreen_" .. hitEnt:EntIndex()
 				hook.Add("Think",hookName,function()
 					if !IsValid(hitEnt) or IsValid(hitEnt) && (hitEnt:Health() <= 0) or !IsValid(self) then
-						if !IsValid(self) && IsValid(hitEnt) && hitEnt:IsPlayer() then
-							hitEnt:DrawViewModel(true)
+						if IsValid(hitEnt) then
+							if hitEnt.IsVJBaseSNPC then
+								hitEnt:SetState()
+							end
+							if hitEnt.OnReleasedFromJumpscare then
+								hitEnt:OnReleasedFromJumpscare(self)
+							end
 						elseif IsValid(self) then
 							self.InAttack = false
 						end
@@ -509,6 +579,12 @@ if VJExists == true then
 					if CurTime() > hitEnt.VJ_FNaF_KillTime then
 						self.InAttack = false
 						hook.Remove("Think",hookName)
+						if hitEnt.IsVJBaseSNPC then
+							hitEnt:SetState()
+						end
+						if hitEnt.OnReleasedFromJumpscare then
+							hitEnt:OnReleasedFromJumpscare(self)
+						end
 						return
 					else
 						hitEnt:SetEnemy(NULL)
