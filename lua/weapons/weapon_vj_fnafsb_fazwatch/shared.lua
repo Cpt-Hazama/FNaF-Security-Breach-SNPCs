@@ -123,6 +123,31 @@ function SWEP:SecondaryAttack()
 	self:SetNextSecondaryFire(CurTime() +1)
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
+function SWEP:CustomOnThink()
+	if CLIENT then return end
+	if !IsFNaFGamemode() then return end
+
+	local owner = self.Owner
+	local closeEnt = NULL
+	local closeDist = 999999999
+	for _,v in pairs(ents.FindInSphere(owner:GetPos(),1500)) do
+		local dist = owner:GetPos():Distance(v:GetPos())
+		if v.VJ_FNaFSB_Item && dist < closeDist then
+			closeDist = dist
+			closeEnt = v
+		end
+	end
+
+	self.NextBeepT = self.NextBeepT or 0
+
+	if IsValid(closeEnt) then
+		if CurTime() > self.NextBeepT then
+			VJ_EmitSound(owner,"buttons/button17.wav")
+			self.NextBeepT = CurTime() +math.Clamp((3 *(closeDist /1500)),0.2,3)
+		end
+	end
+end
+---------------------------------------------------------------------------------------------------------------------------------------------
 function SWEP:CalcView(ply,pos,ang,fov)
 	if !IsFNaFGamemode() then return pos, ang, fov end
 	if ply != self.Owner then return pos, ang, fov end

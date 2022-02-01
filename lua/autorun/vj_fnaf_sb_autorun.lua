@@ -21,7 +21,28 @@ if VJExists == true then
 		resource.AddWorkshop("2725352362") -- Pack #3
 	end
 
+	local re1 = file.Exists("lua/autorun/vj_fnaf_sb_1.lua","GAME")
+	local re2 = file.Exists("lua/autorun/vj_fnaf_sb_2.lua","GAME")
+	local re3 = file.Exists("lua/autorun/vj_fnaf_sb_3.lua","GAME")
+	local allowNPCs = true
+	if re1 == false or re2 == false or re3 == false then
+		if SERVER then
+			timer.Create("FNAFSBMissing",5,0,function()
+				if game.SinglePlayer() then
+					Entity(1):ChatPrint("[FNaF SB SNPCs] - Missing resources detected! Either you didn't download the required addons, disabled the required addons, or they failed to download/install. Please verify that you have the required addons installed and enabled to prevent this message from appearing!")
+				end
+				print("[FNaF SB SNPCs] - Missing resources detected! Either you didn't download the required addons, disabled the required addons, or they failed to download/install. Please verify that you have the required addons installed and enabled to prevent this message from appearing!")
+			end)
+		end
+		allowNPCs = false
+	end
+
+	if allowNPCs == false then return end
+	
+	VJ.AddConVar("vj_fnaf_cache",1)
+
 	if GetConVar("mat_dxlevel"):GetInt() >= 90 /*&& GetConVar("gmod_mcore_test"):GetInt() == 1*/ then -- Since DXLevel is a var automatically set by GMod based on your PC specs, this is a good and the only way to detect that someone has a bad setup.
+		if GetConVar("vj_fnaf_cache"):GetInt() == 0 then return end
 		local mdlDir = "models/cpthazama/fnaf_sb/"
 		local tblCache = {Main={}, Custom={}}
 		local startTime = SysTime()
@@ -72,24 +93,6 @@ if VJExists == true then
 			end)
 		end
 	end
-
-	local re1 = file.Exists("lua/autorun/vj_fnaf_sb_1.lua","GAME")
-	local re2 = file.Exists("lua/autorun/vj_fnaf_sb_2.lua","GAME")
-	local re3 = file.Exists("lua/autorun/vj_fnaf_sb_3.lua","GAME")
-	local allowNPCs = true
-	if re1 == false or re2 == false or re3 == false then
-		if SERVER then
-			timer.Create("FNAFSBMissing",5,0,function()
-				if game.SinglePlayer() then
-					Entity(1):ChatPrint("[FNaF SB SNPCs] - Missing resources detected! Either you didn't download the required addons, disabled the required addons, or they failed to download/install. Please verify that you have the required addons installed and enabled to prevent this message from appearing!")
-				end
-				print("[FNaF SB SNPCs] - Missing resources detected! Either you didn't download the required addons, disabled the required addons, or they failed to download/install. Please verify that you have the required addons installed and enabled to prevent this message from appearing!")
-			end)
-		end
-		allowNPCs = false
-	end
-
-	if allowNPCs == false then return end
 
 	VJ_FNAF_COREINSTALLED = true
 
@@ -183,7 +186,7 @@ if VJExists == true then
 	end
 
 	function GetFNaFGamemode()
-		if InFNaFGamemode() then
+		if IsFNaFGamemode() then
 			return ents.FindByClass("sent_vj_fnafsb_gamemode")[1]
 		end
 		return false
@@ -521,6 +524,21 @@ if VJExists == true then
 
 		function NPC:VJ_FNAF_BringAlertedAllies(dist,ent) -- Dist is obsolete
 			if !IsValid(ent) then return end
+			if IsFNaFGamemode() then
+				ent:SetNW2Int("VJ_FNaF_SpotT",CurTime() +10)
+				local animatronic = false
+				for _,v in RandomPairs(ents.GetAll()) do
+					if v:IsNPC() && v != self && !v.VJ_FNaF_StaffBot && !v.VJ_FNAFSB_Bot && !IsValid(v.VJ_TheController) then
+						animatronic = v
+						break
+					end
+				end
+				if animatronic then
+					animatronic:SetTarget(ent)
+					animatronic:VJ_TASK_GOTO_TARGET("TASK_RUN_PATH")
+				end
+				return
+			end
 			local dist = GetConVar("vj_fnaf_teleportdistance"):GetInt()
 			local animatronic = false
 			for _,v in RandomPairs(ents.FindInSphere(self:GetPos(),dist)) do
@@ -989,7 +1007,7 @@ if VJExists == true then
 		end)
 	end
 
-	function VJ_FNaF_FindHiddenNavArea(trCheck,water)
+	function VJ_FNaF_FindHiddenNavArea(trCheck,water,minDist)
 		local tbl = {}
 		if !navmesh then return tbl end
 		local function VisToPlayers(area)
@@ -1002,7 +1020,7 @@ if VJExists == true then
 		end
 		local function TooClose(area)
 			for _,v in pairs(player.GetAll()) do
-				if v:GetPos():Distance(area:GetCenter()) <= 900 then
+				if v:GetPos():Distance(area:GetCenter()) <= (minDist or 900) then
 					return true
 				end
 			end
