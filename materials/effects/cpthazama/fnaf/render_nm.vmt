@@ -1,0 +1,15 @@
+"UnLitGeneric"
+{
+	"$basetexture" "effects/cpthazama/fnaf/render_nm"
+	"$nodecal" "1"
+	"$translucent" "1"
+	"Proxies"
+	{
+		"TextureScroll"
+		{
+			"texturescrollvar" "$basetexturetransform"
+			"texturescrollrate" "0.25"
+			"texturescrollangle" "60"
+		}
+	}
+}

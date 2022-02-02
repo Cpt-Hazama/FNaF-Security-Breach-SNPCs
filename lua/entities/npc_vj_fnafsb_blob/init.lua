@@ -225,7 +225,7 @@ function ENT:CreateTentacle(pos)
 				end
 			end)
 			if !IsValid(target) then return end
-			self:VJ_FNAF_Attack(target,2,2,nil,"cpthazama/fnafsb/burntrap/jumpscare.wav",true)
+			self:VJ_FNAF_Attack(target,2,2,nil,"cpthazama/fnafsb/sfx_jumpScare_Blob_Ground.mp3",true)
 			local v = ents.Create("prop_vj_animatable")
 			v:SetModel("models/cpthazama/fnaf_sb/blob.mdl")
 			v:SetPos(target:GetPos())
@@ -309,7 +309,7 @@ function ENT:CustomOnMeleeAttack_AfterChecks(hitEnt, isProp)
 	if isProp then
 		return true
 	end
-	self:VJ_FNAF_Attack(hitEnt,VJ_GetSequenceDuration(self,ACT_MELEE_ATTACK1),2,nil,"cpthazama/fnafsb/burntrap/jumpscare.wav")
+	self:VJ_FNAF_Attack(hitEnt,VJ_GetSequenceDuration(self,ACT_MELEE_ATTACK1),2,nil,"cpthazama/fnafsb/sfx_jumpScare_Blob.mp3")
 	return false
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------

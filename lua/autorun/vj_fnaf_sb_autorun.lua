@@ -41,8 +41,11 @@ if VJExists == true then
 	
 	VJ.AddConVar("vj_fnaf_cache",1)
 
+	VJ_FNAFSB_CACHED = VJ_FNAFSB_CACHED or false
+
 	if GetConVar("mat_dxlevel"):GetInt() >= 90 /*&& GetConVar("gmod_mcore_test"):GetInt() == 1*/ then -- Since DXLevel is a var automatically set by GMod based on your PC specs, this is a good and the only way to detect that someone has a bad setup.
 		if GetConVar("vj_fnaf_cache"):GetInt() == 0 then return end
+		if VJ_FNAFSB_CACHED then return end
 		local mdlDir = "models/cpthazama/fnaf_sb/"
 		local tblCache = {Main={}, Custom={}}
 		local startTime = SysTime()
@@ -147,6 +150,7 @@ if VJExists == true then
 
 	// Custom
 	VJ.AddNPC("Blob-Skeleton","npc_vj_fnafsb_endo_blob",vCat)
+	-- VJ.AddNPC("Nightmarionne (Possessed Form)","npc_vj_fnafsb_staff_nightmare_nm",vCat)
 
 	--// ConVars \\--
 
@@ -160,6 +164,11 @@ if VJExists == true then
 	VJ.AddClientConVar("vj_fnaf_tension_vol",80,"Enable standard tension effects")
 	VJ.AddClientConVar("vj_fnaf_hack_hud",1,"Enable Freddy's Hack HUD")
 	VJ.AddClientConVar("vj_fnaf_cam_pic",0,"Enable Faz-Cam saving pictures")
+
+	--// Effecrs \\--
+	VJ.AddParticle("particles/vj_fnaf_ucn.pcf",{
+		"vj_fnaf_nightmare_aura",
+	})
 
 	VJ_SoundDuration = function(sndfile)
 		if !sndfile then return 0 end

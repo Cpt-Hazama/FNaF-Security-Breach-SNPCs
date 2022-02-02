@@ -296,7 +296,7 @@ function ENT:CustomOnMeleeAttack_AfterChecks(hitEnt, isProp)
 	if isProp then
 		return true
 	end
-	self:VJ_FNAF_Attack(hitEnt,VJ_GetSequenceDuration(self,ACT_MELEE_ATTACK1),2,nil,"cpthazama/fnafsb/sfx_jumpScare_sewer.wav")
+	self:VJ_FNAF_Attack(hitEnt,VJ_GetSequenceDuration(self,ACT_MELEE_ATTACK1),2,nil,"cpthazama/fnafsb/sfx_jumpScare_BurnTrap.mp3")
 	return false
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
