@@ -93,6 +93,14 @@ end
 ---------------------------------------------------------------------------------------------------------------------------------------------
 function ENT:CustomOnInitialize()
 	self.InAttack = false
+
+	self.Loop = CreateSound(self, "cpthazama/fnafsb/lmm/lmm_theme.wav")
+	self.Loop:SetSoundLevel(55)
+	self.Loop:Play()
+
+	self.Loop2 = CreateSound(self, "cpthazama/fnafsb/lmm/fx/sfx_lmm_servo_struggle_0" .. math.random(1,4) .. ".wav")
+	self.Loop2:SetSoundLevel(60)
+	self.Loop2:Play()
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
 function ENT:CustomOnAcceptInput(key,activator,caller,data)
@@ -148,4 +156,9 @@ end
 function ENT:CustomGibOnDeathSounds(dmginfo, hitgroup)
 	VJ_EmitSound(self, "npc/turret_floor/detonate.wav", 90, 100)
 	return false
+end
+---------------------------------------------------------------------------------------------------------------------------------------------
+function ENT:CustomOnRemove()
+	self.Loop:Stop()
+	self.Loop2:Stop()
 end

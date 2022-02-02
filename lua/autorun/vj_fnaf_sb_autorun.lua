@@ -47,16 +47,13 @@ if VJExists == true then
 		local tblCache = {Main={}, Custom={}}
 		local startTime = SysTime()
 		for _,v in pairs(file.Find(mdlDir .. "*.mdl","GAME")) do
-			-- util.PrecacheModel(mdlDir .. v)
 			table.insert(tblCache.Main, mdlDir .. v)
 		end
 		for _,v in pairs(file.Find(mdlDir .. "/custom/*.mdl","GAME")) do
-			-- util.PrecacheModel(mdlDir .. v)
 			table.insert(tblCache.Custom, mdlDir .. "custom/" .. v)
 		end
 		for i,v in pairs(tblCache.Main) do
 			timer.Simple(0.25 *i,function()
-				-- print("Caching " .. v)
 				util.PrecacheModel(v)
 				if i == #tblCache.Main then
 					tblCache.Main = {}
@@ -69,7 +66,6 @@ if VJExists == true then
 		end
 		for i,v in pairs(tblCache.Custom) do
 			timer.Simple(0.25 *i,function()
-				-- print("Caching " .. v)
 				util.PrecacheModel(v)
 				if i == #tblCache.Custom then
 					tblCache.Custom = {}
@@ -80,7 +76,6 @@ if VJExists == true then
 				end
 			end)
 		end
-		-- print("Successfully cached all models for " .. PublicAddonName .. "!")
 	else
 		print("Failed to cached models for " .. PublicAddonName .. ", PC specs are too low!")
 		if CLIENT then
@@ -95,6 +90,17 @@ if VJExists == true then
 	end
 
 	VJ_FNAF_COREINSTALLED = true
+	VJ_FNAF_GAMEMODEENTITY = NULL
+
+	if CLIENT then
+			-- HUD Scaling --
+		FNaF_ScrW = ScrW() /2560
+		FNaF_ScrH = ScrH() /1440
+		hook.Add("Think","VJ_FNaF_UpdateHUDValues",function()
+			FNaF_ScrW = ScrW() /2560
+			FNaF_ScrH = ScrH() /1440
+		end)
+	end
 
 	local vCat = Name
 	VJ.AddCategoryInfo(vCat,{Icon = "vj_icons/fnafsb.png"})
@@ -528,7 +534,7 @@ if VJExists == true then
 				ent:SetNW2Int("VJ_FNaF_SpotT",CurTime() +10)
 				local animatronic = false
 				for _,v in RandomPairs(ents.GetAll()) do
-					if v:IsNPC() && v != self && !v.VJ_FNaF_StaffBot && !v.VJ_FNAFSB_Bot && !IsValid(v.VJ_TheController) then
+					if v:IsNPC() && v != self && !v.VJ_FNaF_StaffBot && !v.VJ_FNAFSB_Bot && !IsValid(v.VJ_TheController) && v.VJ_TASK_GOTO_TARGET then
 						animatronic = v
 						break
 					end
@@ -575,6 +581,7 @@ if VJExists == true then
 			if hitEnt.VJ_FNaF_KillTime && hitEnt.VJ_FNaF_KillTime > CurTime() then
 				return false
 			end
+			hitEnt.VJ_FNaF_OriginalPosition = hitEnt:GetPos()
 			if hitEnt:IsNPC() then
 				self.InAttack = true
 				hitEnt.VJ_FNaF_KillTime = CurTime() +(time or 2)
@@ -582,6 +589,7 @@ if VJExists == true then
 				hook.Add("Think",hookName,function()
 					if !IsValid(hitEnt) or IsValid(hitEnt) && (hitEnt:Health() <= 0) or !IsValid(self) then
 						if IsValid(hitEnt) then
+							hitEnt:SetPos(hitEnt.VJ_FNaF_OriginalPosition)
 							if hitEnt.IsVJBaseSNPC then
 								hitEnt:SetState()
 							end
@@ -597,6 +605,7 @@ if VJExists == true then
 					if CurTime() > hitEnt.VJ_FNaF_KillTime then
 						self.InAttack = false
 						hook.Remove("Think",hookName)
+						hitEnt:SetPos(hitEnt.VJ_FNaF_OriginalPosition)
 						if hitEnt.IsVJBaseSNPC then
 							hitEnt:SetState()
 						end
@@ -637,6 +646,7 @@ if VJExists == true then
 				hook.Add("Think",hookName,function()
 					if !IsValid(hitEnt) or IsValid(hitEnt) && (!hitEnt:Alive() or hitEnt:Health() <= 0 or CurTime() > hitEnt.VJ_FNaF_KillTime) or !IsValid(self) then
 						if IsValid(hitEnt) then
+							hitEnt:SetPos(hitEnt.VJ_FNaF_OriginalPosition)
 							hitEnt:Freeze(false)
 							hitEnt:DrawViewModel(true)
 							hitEnt:RemoveFlags(FL_NOTARGET)
@@ -653,6 +663,7 @@ if VJExists == true then
 						return
 					end
 					if CurTime() > hitEnt.VJ_FNaF_KillTime then
+						hitEnt:SetPos(hitEnt.VJ_FNaF_OriginalPosition)
 						hitEnt:Freeze(false)
 						hitEnt:DrawViewModel(true)
 						hitEnt:RemoveFlags(FL_NOTARGET)

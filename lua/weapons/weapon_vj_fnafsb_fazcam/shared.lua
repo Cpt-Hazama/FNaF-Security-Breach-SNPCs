@@ -119,17 +119,57 @@ function SWEP:CustomOnThink()
 	self.Primary.Delay = IsValid(self.Owner) && self.Owner:HasGodMode() && 3 or 20
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
-function SWEP:Reload()
+function SWEP:CustomOnPrimaryAttackEffects()
 	return false
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
-function SWEP:CustomOnPrimaryAttackEffects()
-	return false
+function SWEP:CustomOnInitialize()
+	self:SetNW2Bool("ViewMode",false)
+	if CLIENT then
+		local hName = "TP_" .. self.Owner:EntIndex()
+		hook.Add("ShouldDrawLocalPlayer",hName,function(ply)
+			if !IsValid(self) or IsValid(self) && IsValid(self.Owner) && !self.Owner:IsPlayer() then
+				hook.Remove("ShouldDrawLocalPlayer",hName)
+				return false
+			end
+			if !IsFNaFGamemode() then
+				return false
+			end
+			return self:GetNW2Bool("ViewMode")
+		end)
+	end
+end
+---------------------------------------------------------------------------------------------------------------------------------------------
+function SWEP:CustomOnHolster(newWep)
+	self:SetNW2Bool("ViewMode",false)
+	return true
+end
+---------------------------------------------------------------------------------------------------------------------------------------------
+function SWEP:Reload()
+	if !IsFNaFGamemode() then return end
+
+	self.NextReload = self.NextReload or 0
+	if CurTime() < self.NextReload then return end
+
+	self:SetNW2Bool("ViewMode",!self:GetNW2Bool("ViewMode"))
+	self.NextReload = CurTime() +0.25
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
 function SWEP:CalcView(ply,pos,ang,fov)
 	if !IsFNaFGamemode() then return pos, ang, fov end
 	if ply != self.Owner then return pos, ang, fov end
+
+	if self:GetNW2Bool("ViewMode") == true then
+		local att = ply:LookupAttachment("eyes")
+		local startPos = att > 0 && ply:GetAttachment(att).Pos or ply:EyePos()
+		local tr = util.TraceLine({
+			start = startPos,
+			endpos = startPos +ply:GetAimVector() *-60 +ply:GetRight() *30,
+			filter = ply
+		})
+		pos = tr.HitPos +tr.HitNormal *4
+		return pos, ang, fov
+	end
 
 	local realspeed = ply:GetVelocity():Length2D() /ply:GetRunSpeed()
 	local bobspeed = math.Clamp(realspeed *1.1, 0, 1)

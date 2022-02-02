@@ -38,8 +38,8 @@ ENT.AttackProps = false
 ENT.PushProps = false
 
 ENT.DisableFootStepSoundTimer = true
-ENT.GeneralSoundPitch1 = 100
-ENT.GeneralSoundPitch2 = 100
+ENT.GeneralSoundPitch1 = 125
+ENT.GeneralSoundPitch2 = 140
 
 ENT.NextSoundTime_Idle = VJ_Set(9, 15)
 ENT.NextSoundTime_Investigate = VJ_Set(6, 8)
@@ -73,11 +73,109 @@ ENT.SoundTbl_FootStep = {
 	"cpthazama/fnafsb/monty/fx/fly_monty_run_22.wav",
 	"cpthazama/fnafsb/monty/fx/fly_monty_run_23.wav"
 }
+ENT.SoundTbl_Idle = {
+	"cpthazama/fnafsb/monty/MONTY_00005_pref.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00010_pref.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00011.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00023_pref.ogg",
+}
+ENT.SoundTbl_CombatIdle = {
+	"cpthazama/fnafsb/monty/MONTY_00019.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00020.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00021.ogg",
+}
+ENT.SoundTbl_Investigate = {
+	"cpthazama/fnafsb/monty/MONTY_00006_pref.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00007_pref.ogg",
+}
+ENT.SoundTbl_LostEnemy = {
+	"cpthazama/fnafsb/monty/MONTY_00008_pref.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00012_pref.ogg",
+}
+ENT.SoundTbl_Alert = {
+	"cpthazama/fnafsb/monty/MONTY_00009.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00014_pref.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00015_pref.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00016.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00017_pref.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00018_cinematic.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00022.ogg",
+}
+ENT.SoundTbl_CallForHelp = {
+	"cpthazama/fnafsb/monty/MONTY_00013.ogg",
+}
+ENT.SoundTbl_Pain = {
+	"cpthazama/fnafsb/monty/MONTY_00026_01.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00026_02.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00026_03.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00026_04.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00026_05.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00026_06.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00026_07.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00026_08.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00026_09.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00026_10.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00026_11.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00026_12.ogg"
+}
+ENT.SoundTbl_Death = {
+	"cpthazama/fnafsb/monty/MONTY_00025_01.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00025_02.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00025_03.ogg",
+}
+ENT.SoundTbl_Jump = {
+	"cpthazama/fnafsb/monty/MONTY_00024_05.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00024_06.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00024_07.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00024_08.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00024_09.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00024_10.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00024_11.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00024_12.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00024_13.ogg"
+}
 ENT.SoundTbl_JumpFx = {
 	"cpthazama/fnafsb/monty/fx/fly_monty_leap_01.wav",
 	"cpthazama/fnafsb/monty/fx/fly_monty_leap_02.wav",
 	"cpthazama/fnafsb/monty/fx/fly_monty_leap_03.wav",
 	"cpthazama/fnafsb/monty/fx/fly_monty_leap_04.wav"
+}
+ENT.SoundTbl_Shock = {
+	"cpthazama/fnafsb/monty/MONTY_00028_01.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00028_02.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00028_03.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00028_04.ogg",
+}
+ENT.SoundTbl_ShockEnd = {
+	"cpthazama/fnafsb/monty/MONTY_00029_01.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_02.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_03.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_04.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_05.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_06.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_07.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_08.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_09.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_10.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_11.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_12.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_13.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_14.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_15.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_16.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_17.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_18.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_19.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_20.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_21.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_22.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00029_23.ogg",
+}
+ENT.SoundTbl_Land = {
+	"cpthazama/fnafsb/monty/MONTY_00024_01.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00024_02.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00024_03.ogg",
+	"cpthazama/fnafsb/monty/MONTY_00024_04.ogg"
 }
 ENT.SoundTbl_LandFx = {
 	"cpthazama/fnafsb/monty/fx/fly_monty_land_01.wav",
