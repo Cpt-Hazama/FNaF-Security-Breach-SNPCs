@@ -165,6 +165,17 @@ if VJExists == true then
 	VJ.AddClientConVar("vj_fnaf_hack_hud",1,"Enable Freddy's Hack HUD")
 	VJ.AddClientConVar("vj_fnaf_cam_pic",0,"Enable Faz-Cam saving pictures")
 
+	local hName = "VJ_FNaF_DrawPlayer"
+	hook.Add("ShouldDrawLocalPlayer",hName,function(ply)
+		if !IsFNaFGamemode() then
+			return false
+		end
+		if ply.IsControlingNPC then
+			return false
+		end
+		return ply:GetNW2Bool("VJ_FNaF_ViewMode",false)
+	end)
+
 	--// Effecrs \\--
 	VJ.AddParticle("particles/vj_fnaf_ucn.pcf",{
 		"vj_fnaf_nightmare_aura",

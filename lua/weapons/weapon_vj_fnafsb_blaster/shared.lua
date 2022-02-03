@@ -137,20 +137,11 @@ end
 ---------------------------------------------------------------------------------------------------------------------------------------------
 function SWEP:CustomOnInitialize()
 	if self.OnInit then self:OnInit() end
-	self:SetNW2Bool("ViewMode",false)
-	if CLIENT then
-		local hName = "TP_" .. self.Owner:EntIndex()
-		hook.Add("ShouldDrawLocalPlayer",hName,function(ply)
-			if !IsValid(self) or IsValid(self) && IsValid(self.Owner) && !self.Owner:IsPlayer() then
-				hook.Remove("ShouldDrawLocalPlayer",hName)
-				return false
-			end
-			if !IsFNaFGamemode() then
-				return false
-			end
-			return self:GetNW2Bool("ViewMode")
-		end)
-	end
+	timer.Simple(0.1,function()
+		if IsValid(self) && IsValid(self.Owner) then
+			self.Owner:SetNW2Bool("VJ_FNaF_ViewMode",false)
+		end
+	end)
 	timer.Simple(0.1,function() -- Minag mikani modelner tske, yete ooresh model-e, serpe as zenke
 		if IsValid(self) && IsValid(self:GetOwner()) then
 			local owner = self:GetOwner()
@@ -300,7 +291,7 @@ end
 ---------------------------------------------------------------------------------------------------------------------------------------------
 function SWEP:CustomOnHolster(newWep)
 	self:SetLight(false)
-	self:SetNW2Bool("ViewMode",false)
+	self.Owner:SetNW2Bool("VJ_FNaF_ViewMode",false)
 	return true
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -310,7 +301,7 @@ function SWEP:Reload()
 	self.NextReload = self.NextReload or 0
 	if CurTime() < self.NextReload then return end
 
-	self:SetNW2Bool("ViewMode",!self:GetNW2Bool("ViewMode"))
+	self.Owner:SetNW2Bool("VJ_FNaF_ViewMode",!self.Owner:GetNW2Bool("VJ_FNaF_ViewMode"))
 	self.NextReload = CurTime() +0.25
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -318,7 +309,7 @@ function SWEP:CalcView(ply,pos,ang,fov)
 	if !IsFNaFGamemode() then return pos, ang, fov end
 	if ply != self.Owner then return pos, ang, fov end
 
-	if self:GetNW2Bool("ViewMode") == true then
+	if self.Owner:GetNW2Bool("VJ_FNaF_ViewMode") == true then
 		local att = ply:LookupAttachment("eyes")
 		local startPos = att > 0 && ply:GetAttachment(att).Pos or ply:EyePos()
 		local tr = util.TraceLine({

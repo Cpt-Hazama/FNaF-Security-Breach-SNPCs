@@ -1,6 +1,6 @@
 ENT.Base 			= "npc_vj_creature_base"
 ENT.Type 			= "ai"
-ENT.PrintName 		= ""
+ENT.PrintName 		= "Nightmarionne"
 ENT.Author 			= "Cpt. Hazama"
 ENT.Contact 		= "http://steamcommunity.com/groups/vrejgaming"
 ENT.Purpose 		= "Spawn it and fight with it!"
@@ -28,7 +28,7 @@ if CLIENT then
 		end
 
 		if CurTime() > self.NextTwitchT && math.random(1,30) == 1 then
-			local t = math.Rand(0.65,3)
+			local t = math.Rand(0.3,2)
 			self.NextTwitchT = CurTime() +t
 			self.NextTwitchLen = CurTime() +math.Rand(0.1,0.2)
 		elseif CurTime() <= self.NextTwitchLen then
@@ -76,7 +76,6 @@ if CLIENT then
                 hook.Remove("Think",hookName)
                 return
             end
-            if ply.IsControlingNPC && ply.VJCE_NPC.VJ_FNaF_UniqueAnimatronic then return end
             local FT = FrameTime() *6
 			local maxDist = 5000
             local dist = ply:GetPos():Distance(self:GetPos())
@@ -87,20 +86,33 @@ if CLIENT then
                     return
                 end
 
-                if !ply:Alive() or (ply.IsControlingNPC && ply.VJCE_NPC == self) or dist > maxDist or GetConVar("ai_ignoreplayers"):GetInt() == 1 then return end
+                if !ply:Alive() or ply.IsControlingNPC or dist > maxDist or GetConVar("ai_ignoreplayers"):GetInt() == 1 then return end
 
+				ply.VJ_FNaF_NMShotT = ply.VJ_FNaF_NMShotT or 0
+				ply.VJ_FNaF_NMShot = ply.VJ_FNaF_NMShot or 1
+				ply.VJ_FNaF_NMShotLen = ply.VJ_FNaF_NMShotLen or 0
+				if ply.VJ_FNaF_NMShotA == nil then ply.VJ_FNaF_NMShotA = 0 end
 				if dist < maxDist *0.9 then
-					ply.VJ_FNaF_NMShotT = ply.VJ_FNaF_NMShotT or 0
-					ply.VJ_FNaF_NMShot = ply.VJ_FNaF_NMShot or 1
-					ply.VJ_FNaF_NMShotLen = ply.VJ_FNaF_NMShotLen or 0
-					if ply.VJ_FNaF_NMShotA == nil then ply.VJ_FNaF_NMShotA = 0 end
 					if CurTime() > ply.VJ_FNaF_NMShotT && math.random(1,25) == 1 then
-					-- if CurTime() > ply.VJ_FNaF_NMShotT then
-						ply.VJ_FNaF_NMShotLen = CurTime() +math.random(2,5)
-						-- ply.VJ_FNaF_NMShotT = CurTime() +math.Rand(7,9)
-						ply.VJ_FNaF_NMShotT = CurTime() +math.Rand(7,18)
+						local dur = 1
+						if dist > maxDist *0.3 then
+							local snd = VJ_PICK({"cpthazama/fnafsb/nm/nm1.mp3","cpthazama/fnafsb/nm/nm2.mp3","cpthazama/fnafsb/nm/nm3.mp3","cpthazama/fnafsb/nm/nm4.mp3","cpthazama/fnafsb/nm/nm5.mp3"})
+							surface.PlaySound(snd)
+							dur = VJ_SoundDuration(snd) *0.9
+						end
+						ply.VJ_FNaF_NMShotLen = CurTime() +dur
+						ply.VJ_FNaF_NMShotT = CurTime() +dur +math.Rand(7,18)
 						ply.VJ_FNaF_NMShot = math.random(1,2)
-						ply.VJ_FNaF_NM_X = math.random(ScrW() *-0.5,ScrW() *0.5)
+						local ang = (self:GetPos() -ply:GetPos()):Angle()
+						local dif = math.AngleDifference(ply:GetAngles().y,ang.y)
+						local w = ScrW()
+						local num = 0
+						if dif >= 0 then
+							num = 0.5 +math.Clamp(dif /90,0,0.5)
+						else
+							num = 0.5 -math.Clamp(dif /-90,0,1) *0.5
+						end
+						ply.VJ_FNaF_NM_X = ((w *num)) -(w *0.5)
 					end
 				end
 				if CurTime() < ply.VJ_FNaF_NMShotLen then

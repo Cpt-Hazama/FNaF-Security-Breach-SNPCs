@@ -65,11 +65,10 @@ function ENT:CustomOnInitialize()
 
 	self:SetCollisionBounds(Vector(13,13,82),Vector(-13,-13,0))
 
+	self.LoopSound = VJ_CreateSound(self,"cpthazama/fnafsb/nm/Distortion.wav",70)
+	self.LoopSound2 = VJ_CreateSound(self,"cpthazama/fnaf_sb/music_box.wav",75)
 	self.MoveLoopSound = CreateSound(self,"cpthazama/fnafsb/bot/sfx_staffBot_wheels_lp_0" .. math.random(1,3) .. ".wav")
 	self.MoveLoopSound:SetSoundLevel(60)
-	self.LoopSound = CreateSound(self,"cpthazama/fnafsb/nm/Distortion.wav")
-	self.LoopSound:SetSoundLevel(60)
-	self.LoopSound:Play()
 
 	ParticleEffectAttach("vj_fnaf_nightmare_aura",PATTACH_POINT_FOLLOW,self,self:LookupAttachment("origin"))
 
@@ -107,7 +106,7 @@ function ENT:CustomOnInitialize()
 	end
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
-function ENT:CustomOnThink_AIEnabled()
+function ENT:CustomOnThink()
 	local movingFast = self:GetMovementActivity() == ACT_RUN
 	self.MoveLoopSound:ChangePitch(movingFast && 115 or 100)
 	self.MoveLoopSound:ChangeVolume(movingFast && 1 or 0.6)
@@ -121,7 +120,8 @@ function ENT:CustomOnThink_AIEnabled()
 		self.MoveLoopPlaying = false
 	end
 
-	self.LoopSound:Play()
+	-- self.LoopSound:Play()
+	-- self.LoopSound2:Play()
 
 	local ent = self:GetEnemy()
 	local anim = self:GetActivity()
@@ -173,5 +173,6 @@ end
 ---------------------------------------------------------------------------------------------------------------------------------------------
 function ENT:CustomOnRemove()
 	self.LoopSound:Stop()
+	self.LoopSound2:Stop()
 	self.MoveLoopSound:Stop()
 end

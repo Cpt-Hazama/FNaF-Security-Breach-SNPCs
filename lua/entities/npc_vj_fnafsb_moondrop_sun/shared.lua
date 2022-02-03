@@ -54,7 +54,7 @@ if CLIENT then
                     closestDist = dist
                 end
             end
-            if ply.IsControlingNPC && ply.VJCE_NPC.VJ_FNaF_UniqueAnimatronic then return end
+            -- if ply.IsControlingNPC && ply.VJCE_NPC.VJ_FNaF_UniqueAnimatronic then return end
             if !IsValid(moon) then ply.VJ_FNaF_Moon_Threshold = 0 return end
             local FT = FrameTime() *3
             local dist = ply:GetPos():Distance(moon:GetPos())
@@ -70,7 +70,7 @@ if CLIENT then
                 ply.VJ_FNaF_Moon_Stinger = ply.VJ_FNaF_Moon_Stinger or 0
                 ply.VJ_FNaF_Moon_Last = ply.VJ_FNaF_Moon_Last or NULL
                 local threshold = ply.VJ_FNaF_Moon_Threshold or 0
-                if !ply:Alive() or (ply.IsControlingNPC && ply.VJCE_NPC == moon) then return end
+                if !ply:Alive() or ply.IsControlingNPC then return end
                 if threshold == 0 then return end
                 if !isMoon then return end
 
