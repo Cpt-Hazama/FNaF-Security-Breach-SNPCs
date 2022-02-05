@@ -58,6 +58,7 @@ if VJExists == true then
 		for i,v in pairs(tblCache.Main) do
 			timer.Simple(0.25 *i,function()
 				util.PrecacheModel(v)
+				if SERVER then PrintMessage(HUD_PRINTCENTER,"FNaF SB Models are Pre-Caching, please be patient while your experience is enhanced!") end
 				if i == #tblCache.Main then
 					tblCache.Main = {}
 					if CLIENT then
@@ -458,7 +459,7 @@ if VJExists == true then
 					endpos = myPosCentered +v *checkDist,
 					filter = entCheck
 				})
-				local hitPos = tr.HitPos +tr.HitNormal *22
+				local hitPos = tr.HitPos +tr.HitNormal *24
 				local dist = entCheck:GetPos():Distance(hitPos)
 				if (dist <= checkDist && dist > checkDist *0.25) or !tr.Hit then
 					if returnPos == true then
