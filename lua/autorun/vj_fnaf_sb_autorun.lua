@@ -438,7 +438,7 @@ if VJExists == true then
 		local str1111 = "1111"
 		local str1 = "1"
 		local string_sub = string.sub
-		function VJ_FNaF_CheckAllFourSides(entCheck, checkDist, returnPos, sides)
+		function VJ_FNaF_CheckAllFourSides(entCheck, checkDist, returnPos, sides, offset, mins, maxs)
 			checkDist = checkDist or 200
 			sides = sides or str1111
 			local result = returnPos == true and {} or {Forward=false, Backward=false, Right=false, Left=false}
@@ -454,12 +454,23 @@ if VJExists == true then
 			for _, v in pairs(positions) do
 				i = i + 1
 				if v == 0 then continue end -- If 0 then we have the tag to skip this!
-				local tr = util.TraceLine({
-					start = myPosCentered,
-					endpos = myPosCentered +v *checkDist,
-					filter = entCheck
-				})
-				local hitPos = tr.HitPos +tr.HitNormal *24
+				local tr = {}
+				if mins && maxs then
+					tr = util.TraceHull({
+						start = myPos,
+						endpos = myPos +v *checkDist,
+						filter = entCheck,
+						mins = mins,
+						maxs = maxs
+					})
+				else
+					tr = util.TraceLine({
+						start = myPosCentered,
+						endpos = myPosCentered +v *checkDist,
+						filter = entCheck
+					})
+				end
+				local hitPos = tr.HitPos +tr.HitNormal *(offset or 24)
 				local dist = entCheck:GetPos():Distance(hitPos)
 				if (dist <= checkDist && dist > checkDist *0.25) or !tr.Hit then
 					if returnPos == true then
