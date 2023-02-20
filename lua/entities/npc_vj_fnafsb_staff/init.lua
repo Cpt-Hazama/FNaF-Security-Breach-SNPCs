@@ -93,7 +93,7 @@ end
 function ENT:SetMapAnimation(set)
 	self.MapAnimSet = set && 1 or 0
 	if set then
-		self.AnimTbl_IdleStand = {ACT_IDLE_STEALTH}
+		self:SetIdleAnimation({ACT_IDLE_STEALTH},true)
 		self.AnimTbl_Walk = {ACT_WALK_STIMULATED}
 		self.AnimTbl_Run = {ACT_RUN_STIMULATED}
 		self:SetBodygroup(1,1)
@@ -102,7 +102,7 @@ function ENT:SetMapAnimation(set)
 		VJ_CreateSound(self,snd)
 		self.NextAnnoyingT = CurTime() +SoundDuration(snd) +math.Rand(4,7)
 	else
-		self.AnimTbl_IdleStand = {ACT_IDLE_RELAXED}
+		self:SetIdleAnimation({ACT_IDLE_RELAXED},true)
 		self.AnimTbl_Walk = {ACT_WALK}
 		self.AnimTbl_Run = {ACT_RUN}
 		self:SetBodygroup(1,0)
@@ -202,7 +202,7 @@ function ENT:CustomOnInitialize()
 	local gender = self.Gender
 	local staffType = self.StaffType
 	if staffType == 0 then -- Default
-		self.AnimTbl_IdleStand = {ACT_CROUCHIDLE}
+		self:SetIdleAnimation({ACT_CROUCHIDLE},true)
 		self.AnimTbl_Walk = {ACT_WALK_RELAXED}
 		self.AnimTbl_Run = {ACT_RUN_RELAXED}
 
@@ -235,7 +235,7 @@ function ENT:CustomOnInitialize()
 		self:SetBodygroup(1,1)
 		self:SetBodygroup(4,1)
 	elseif staffType == 1 then -- Security
-		self.AnimTbl_IdleStand = {ACT_IDLE_STIMULATED}
+		self:SetIdleAnimation({ACT_IDLE_STIMULATED},true)
 		self.AnimTbl_Walk = {ACT_WALK_AGITATED}
 		self.AnimTbl_Run = {ACT_RUN_AGITATED}
 		self.HasMeleeAttack = true
@@ -332,7 +332,7 @@ function ENT:CustomOnInitialize()
 		self:SetBodygroup(2,1)
 		self:SetBodygroup(5,1)
 	elseif staffType == 2 then -- Map
-		self.AnimTbl_IdleStand = {ACT_IDLE_RELAXED}
+		self:SetIdleAnimation({ACT_IDLE_RELAXED},true)
 		self.AnimTbl_Walk = {ACT_WALK}
 		self.AnimTbl_Run = {ACT_RUN}
 
@@ -360,12 +360,12 @@ function ENT:CustomOnInitialize()
 		}
 		self.SoundTbl_Map = tbl[self.Gender]
 	elseif staffType == 3 then -- Killer
-		self.AnimTbl_IdleStand = {ACT_IDLE}
+		self:SetIdleAnimation({ACT_IDLE},true)
 		self.AnimTbl_Walk = {ACT_WALK}
 		self.AnimTbl_Run = {ACT_RUN}
 		self.HasMeleeAttack = true
 	elseif staffType == 4 then -- Blaster
-		self.AnimTbl_IdleStand = {ACT_IDLE_HURT}
+		self:SetIdleAnimation({ACT_IDLE_HURT},true)
 		self.AnimTbl_Walk = {ACT_WALK_STEALTH}
 		self.AnimTbl_Run = {ACT_RUN_STEALTH}
 
@@ -451,9 +451,9 @@ function ENT:CustomOnThink()
 		self.Alerted = false
 	elseif staffType == 2 then
 		local ply = self.TargetPlayer
-		local dist = self:VJ_GetNearestPointToEntityDistance(ply)
 		self.DisableWandering = IsValid(ply)
 		if IsValid(ply) then
+			local dist = self:VJ_GetNearestPointToEntityDistance(ply)
 			local gender = self.Gender
 			if !IsValid(ply) or IsValid(ply) && (ply:Health() <= 0 /*or ply:IsFlagSet(FL_NOTARGET)*/ or (self:GetPos():Distance(ply:GetPos()) > 1000 && !self:Visible(ply))) or GetConVarNumber("ai_ignoreplayers") == 1 then
 				self.TargetPlayer = NULL

@@ -411,16 +411,19 @@ end
 ---------------------------------------------------------------------------------------------------------------------------------------------
 function ENT:CustomOnAlert(ent)
 	self:VJ_FNAF_Stinger(ent)
-	self.AnimTbl_IdleStand = {ACT_IDLE_ANGRY}
+	self:SetIdleAnimation({ACT_IDLE_ANGRY},true)
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
 function ENT:CustomOnResetEnemy()
-	self.AnimTbl_IdleStand = {ACT_IDLE}
+	self:SetIdleAnimation({ACT_IDLE},true)
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
+local string_find = string.find
+local string_lower = string.lower
+--
 function ENT:OnPlayCreateSound(SoundData,SoundFile)
-	if string.find(string.lower(SoundFile),"jumpscare") then return end
-	if string.find(SoundFile,"fx") then return end
+	if string_find(string_lower(SoundFile),"jumpscare") then return end
+	if string_find(SoundFile,"fx") then return end
 	if SoundFile == "cpthazama/fnafsb/flashlight.wav" then return end
 	self.NextMouthT = CurTime() +VJ_SoundDuration(SoundFile)
 end

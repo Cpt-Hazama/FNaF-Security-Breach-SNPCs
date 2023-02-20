@@ -281,7 +281,7 @@ function ENT:CreateTentacle(pos)
 	end)
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
-function ENT:CustomAttack()
+function ENT:CustomOnThink()
 	local ent = self:GetEnemy()
 	local anim = self:GetActivity()
 	local dist = self.NearestPointToEnemyDistance

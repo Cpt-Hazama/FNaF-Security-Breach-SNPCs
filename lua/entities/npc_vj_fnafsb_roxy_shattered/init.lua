@@ -263,7 +263,7 @@ function ENT:OnSoundDetected(data,ent)
 		-- print(ent,"Added time")
 		if IsValid(self:GetEnemy()) then return end
 		if ((ent:IsNPC() or ent:IsPlayer() && GetConVarNumber("ai_ignoreplayers") == 0) && self:DoRelationshipCheck(ent) == true) or string.find(ent:GetClass(),"prop_") then
-			if self.NextInvestigateSoundMove < CurTime() then
+			if self.NextInvestigationMove < CurTime() then
 				-- self:VJ_FNAF_Stinger(ent)
 				self:CustomOnInvestigate(ent)
 				self:StopAllCommonSounds()
@@ -275,7 +275,7 @@ function ENT:OnSoundDetected(data,ent)
 					self:VJ_TASK_GOTO_LASTPOS("TASK_WALK_PATH")
 				end
 				self:PlaySoundSystem("InvestigateSound")
-				self.NextInvestigateSoundMove = CurTime() +2
+				self.NextInvestigationMove = CurTime() +2
 			end
 		end
 	end
@@ -290,7 +290,7 @@ function ENT:CustomOnThink()
 		local state = self.IdleState
 		if state == 0 then
 			self.SoundTbl_Idle = defIdleSad
-			self.AnimTbl_IdleStand = {ACT_IDLE_STIMULATED}
+			self:SetIdleAnimation({ACT_IDLE_STIMULATED},true)
 			self.AnimTbl_Walk = {ACT_WALK_STIMULATED}
 			self.AnimTbl_Run = {ACT_WALK_STIMULATED}
 			self.IdleState = 1
@@ -310,14 +310,14 @@ function ENT:CustomOnThink()
 	end
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
-function ENT:CustomAttack()
+function ENT:CustomOnThink()
 	local ent = self:GetEnemy()
 	local dist = self.NearestPointToEnemyDistance
 	local leapState = self.LeapState
 
 	if self.IdleState == 1 then
 		self.SoundTbl_Idle = defIdle
-		self.AnimTbl_IdleStand = {ACT_IDLE}
+		self:SetIdleAnimation({ACT_IDLE},true)
 		self.AnimTbl_Walk = {ACT_WALK}
 		self.AnimTbl_Run = {ACT_RUN}
 		self.IdleState = 0

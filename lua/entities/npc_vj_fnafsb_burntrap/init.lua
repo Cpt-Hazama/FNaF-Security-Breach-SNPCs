@@ -229,9 +229,12 @@ function ENT:CustomOnPriorToKilled(dmginfo, hitgroup)
 	end
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
+local string_find = string.find
+local string_lower = string.lower
+--
 function ENT:OnPlayCreateSound(SoundData,SoundFile)
-	if string.find(string.lower(SoundFile),"jumpscare") then return end
-	if string.find(SoundFile,"fx") then return end
+	if string_find(string_lower(SoundFile),"jumpscare") then return end
+	if string_find(SoundFile,"fx") then return end
 	self.NextMouthT = CurTime() +VJ_SoundDuration(SoundFile)
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -240,14 +243,14 @@ function ENT:CustomOnThink()
 	if !IsValid(self:GetEnemy()) && self:GetActivity() == ACT_IDLE_ANGRY then
 		self:VJ_ACT_PLAYACTIVITY(ACT_DISARM,true,false,true,0,{OnFinish=function(interrupted,anim)
 			self:SetState()
-			self.AnimTbl_IdleStand = {ACT_IDLE}
+			self:SetIdleAnimation({ACT_IDLE},true)
 		end})
 	elseif self:GetActivity() == ACT_IDLE_ANGRY && IsValid(self:GetEnemy()) then
 		self:FaceCertainEntity(self:GetEnemy())
 	end
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
-function ENT:CustomAttack()
+function ENT:CustomOnThink()
 	local ent = self:GetEnemy()
 	local anim = self:GetActivity()
 	local dist = self.NearestPointToEnemyDistance
@@ -274,7 +277,7 @@ function ENT:CustomAttack()
 		elseif anim != ACT_IDLE_ANGRY && anim != ACT_ARM then
 			self:VJ_ACT_PLAYACTIVITY(ACT_ARM,true,false,true,0,{OnFinish=function(interrupted,anim)
 				self:SetState(VJ_STATE_ONLY_ANIMATION_NOATTACK)
-				self.AnimTbl_IdleStand = {ACT_IDLE_ANGRY}
+				self:SetIdleAnimation({ACT_IDLE_ANGRY},true)
 				self:VJ_ACT_PLAYACTIVITY(ACT_IDLE_ANGRY,true,false,false)
 			end})
 			self:StopAllCommonSounds()
@@ -286,7 +289,7 @@ function ENT:CustomAttack()
 		if anim == ACT_IDLE_ANGRY then
 			self:VJ_ACT_PLAYACTIVITY(ACT_DISARM,true,false,true,0,{OnFinish=function(interrupted,anim)
 				self:SetState()
-				self.AnimTbl_IdleStand = {ACT_IDLE}
+				self:SetIdleAnimation({ACT_IDLE},true)
 			end})
 		end
 	end

@@ -434,15 +434,18 @@ function ENT:Hack(hacker)
 		end
 		self.HackSound:Play()
 		VJ_CreateSound(self,"cpthazama/fnafsb/burntrap/fx/sfx_burntrap_hackFreddy_complete_leadIn_0" .. math.random(1,3) .. ".wav",80)
-		self.AnimTbl_IdleStand = {ACT_IDLE_ANGRY}
+		self:SetIdleAnimation({ACT_IDLE_ANGRY},true)
 		self:SetState(VJ_STATE_ONLY_ANIMATION_NOATTACK)
 		self:VJ_ACT_PLAYACTIVITY("vjseq_shock_in",true,false,false)
 	end
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
+local string_find = string.find
+local string_lower = string.lower
+--
 function ENT:OnPlayCreateSound(SoundData,SoundFile)
-	if string.find(string.lower(SoundFile),"jumpscare") then return end
-	if string.find(SoundFile,"fx") then return end
+	if string_find(string_lower(SoundFile),"jumpscare") then return end
+	if string_find(SoundFile,"fx") then return end
 	self.NextMouthT = CurTime() +VJ_SoundDuration(SoundFile)
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -459,7 +462,7 @@ function ENT:CustomOnThink()
 		if self.InHack && !self.IsShocked then
 			self.InHack = false
 			self.HackSound:Stop()
-			self.AnimTbl_IdleStand = {ACT_IDLE}
+			self:SetIdleAnimation({ACT_IDLE},true)
 			self:VJ_ACT_PLAYACTIVITY("vjseq_shock_out",true,false,false,0,{OnFinish=function(interrupted,anim)
 				if interrupted then return end
 				self:SetState()
@@ -475,7 +478,7 @@ function ENT:CustomOnThink()
 			self.NextHackSoundT = CurTime() +math.Rand(10,15)
 		end
 		if self.HackLevel >= self.MaxHackLevel then
-			self.AnimTbl_IdleStand = {ACT_IDLE}
+			self:SetIdleAnimation({ACT_IDLE},true)
 			self.InHack = false
 			self:SetMode(1)
 			self.HackSound:Stop()
@@ -489,7 +492,7 @@ function ENT:CustomOnThink()
 	end
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
-function ENT:CustomAttack()
+function ENT:CustomOnThink()
 	local ent = self:GetEnemy()
 	local anim = self:GetActivity()
 	local dist = self.NearestPointToEnemyDistance

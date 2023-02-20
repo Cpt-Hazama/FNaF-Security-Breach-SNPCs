@@ -237,15 +237,14 @@ function ENT:CustomOnAcceptInput(key,activator,caller,data)
 	end
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
-function ENT:CustomAttack()
+function ENT:CustomOnThink()
 	local ent = self:GetEnemy()
 	local dist = self.NearestPointToEnemyDistance
 	local leapState = self.LeapState
 	if !self:IsOnGround() then
 		if self:GetActivity() == ACT_GLIDE && leapState == 0 then
 			self.LeapState = 1
-		elseif leapState == 1 && self:GetActivity() != ACT_GLIDE then
-			self:VJ_ACT_PLAYACTIVITY(ACT_GLIDE,true,false,false)
+			self:SetIdleAnimation({ACT_GLIDE},true)
 		end
 		if dist <= self.MeleeAttackDistance && leapState == 1 then
 			self:StopAttacks(true)
@@ -253,6 +252,7 @@ function ENT:CustomAttack()
 			self.NextIdleTime = 0
 			self.LeapState = 0
 			self:SetState()
+			self:SetIdleAnimation({ACT_IDLE},true)
 			self:SetVelocity(Vector(0,0,0))
 			self:VJ_ACT_PLAYACTIVITY(ACT_MELEE_ATTACK1,true,false,true)
 			self:VJ_FNAF_Attack(ent,VJ_GetSequenceDuration(self,ACT_MELEE_ATTACK1),2,nil,"cpthazama/fnafsb/sfx_jumpScare_monty.wav")
@@ -264,6 +264,7 @@ function ENT:CustomAttack()
 			self.LeapState = 0
 			if !self.InAttack && !self.IsShocked && self:GetActivity() != ACT_MELEE_ATTACK1 then
 				self:SetState()
+				self:SetIdleAnimation({ACT_IDLE},true)
 				self:VJ_ACT_PLAYACTIVITY(ACT_LAND,true,false,false)
 			end
 			self.NextLeapT = CurTime() +5
@@ -271,11 +272,12 @@ function ENT:CustomAttack()
 	end
 	local cont = self.VJ_TheController
 	if IsValid(cont) && cont:KeyDown(IN_ATTACK2) or !IsValid(cont) && IsValid(ent) then
-		if self.LeapState == 0 && self:IsOnGround() && !self:IsBusy() && CurTime() > self.NextLeapT && dist <= 1000 && dist > 600 && self:Visible(ent) then
+		if self.LeapState == 0 && self:IsOnGround() && !self:IsBusy() && CurTime() > self.NextLeapT && dist <= 600 && dist > 300 && self:Visible(ent) then
 			self:VJ_ACT_PLAYACTIVITY(ACT_JUMP,true,false,true,0,{OnFinish=function(interrupted,anim)
 				self:SetGroundEntity(NULL)
 				self:SetState(VJ_STATE_ONLY_ANIMATION)
-				self:SetVelocity(self:CalculateProjectile("Curve", self:GetPos(), ent:GetPos() +(ent:GetPos() -self:GetPos()):GetNormalized() *100,900))
+				self:SetVelocity(self:CalculateProjectile("Curve", self:GetPos(), ent:GetPos() +(ent:GetPos() -self:GetPos()):GetNormalized() *100,600))
+				self:SetIdleAnimation({ACT_GLIDE},true)
 				self:VJ_ACT_PLAYACTIVITY(ACT_GLIDE,true,false,false)
 				self.LeapState = 1
 			end})

@@ -246,9 +246,12 @@ function ENT:CustomOnAcceptInput(key,activator,caller,data)
 	end
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
+local string_find = string.find
+local string_lower = string.lower
+--
 function ENT:OnPlayCreateSound(SoundData,SoundFile)
-	if string.find(string.lower(SoundFile),"jumpscare") then return end
-	if string.find(SoundFile,"fx") then return end
+	if string_find(string_lower(SoundFile),"jumpscare") then return end
+	if string_find(SoundFile,"fx") then return end
 	self.NextMouthT = CurTime() +VJ_SoundDuration(SoundFile)
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -256,15 +259,14 @@ function ENT:CustomOnThink()
 	self:VJ_FNaF_MouthCode()
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
-function ENT:CustomAttack()
+function ENT:CustomOnThink()
 	local ent = self:GetEnemy()
 	local dist = self.NearestPointToEnemyDistance
 	local leapState = self.LeapState
 	if !self:IsOnGround() then
 		if self:GetActivity() == ACT_GLIDE && leapState == 0 then
 			self.LeapState = 1
-		elseif leapState == 1 && self:GetActivity() != ACT_GLIDE then
-			self:VJ_ACT_PLAYACTIVITY(ACT_GLIDE,true,false,false)
+			self:SetIdleAnimation({ACT_GLIDE},true)
 		end
 		if dist <= self.MeleeAttackDistance && leapState == 1 then
 			self:StopAttacks(true)
@@ -272,6 +274,7 @@ function ENT:CustomAttack()
 			self.NextIdleTime = 0
 			self.LeapState = 0
 			self:SetState()
+			self:SetIdleAnimation({ACT_IDLE},true)
 			self:SetVelocity(Vector(0,0,0))
 			self:VJ_ACT_PLAYACTIVITY(ACT_MELEE_ATTACK1,true,false,true)
 			self:VJ_FNAF_Attack(ent,VJ_GetSequenceDuration(self,ACT_MELEE_ATTACK1),2,nil,"cpthazama/fnafsb/sfx_jumpScare_monty.wav")
@@ -283,6 +286,7 @@ function ENT:CustomAttack()
 			self.LeapState = 0
 			if !self.InAttack && !self.IsShocked && self:GetActivity() != ACT_MELEE_ATTACK1 then
 				self:SetState()
+				self:SetIdleAnimation({ACT_IDLE},true)
 				self:VJ_ACT_PLAYACTIVITY(ACT_LAND,true,false,false)
 			end
 			self.NextLeapT = CurTime() +5
@@ -295,6 +299,7 @@ function ENT:CustomAttack()
 				self:SetGroundEntity(NULL)
 				self:SetState(VJ_STATE_ONLY_ANIMATION)
 				self:SetVelocity(self:CalculateProjectile("Curve", self:GetPos(), ent:GetPos() +(ent:GetPos() -self:GetPos()):GetNormalized() *100,600))
+				self:SetIdleAnimation({ACT_GLIDE},true)
 				self:VJ_ACT_PLAYACTIVITY(ACT_GLIDE,true,false,false)
 				self.LeapState = 1
 			end})

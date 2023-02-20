@@ -132,7 +132,7 @@ function ENT:CustomOnTakeDamage_AfterDamage(dmginfo, hitgroup)
 	end
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
-function ENT:CustomWhenBecomingEnemyTowardsPlayer(dmginfo, hitgroup)
+function ENT:CustomOnBecomeEnemyToPlayer(dmginfo, hitgroup)
 	if self.Mode == 0 then
 		self.RunAwayOnUnknownDamage = false
 		self.TargetPlayer = NULL
@@ -156,7 +156,7 @@ function ENT:SetMode(m)
 		self:SetBodygroup(2,1)
 		self:SetBodygroup(7,1)
 
-		self.AnimTbl_IdleStand = {ACT_IDLE_STIMULATED}
+		self:SetIdleAnimation({ACT_IDLE_STIMULATED},true)
 		self.AnimTbl_Walk = {ACT_WALK_AGITATED}
 		self.AnimTbl_Run = {ACT_RUN_AGITATED}
 
@@ -199,7 +199,7 @@ function ENT:SetMode(m)
 		self:SetBodygroup(2,0)
 		self:SetBodygroup(7,0)
 
-		self.AnimTbl_IdleStand = {ACT_IDLE}
+		self:SetIdleAnimation({ACT_IDLE},true)
 		self.AnimTbl_Walk = {ACT_WALK}
 		self.AnimTbl_Run = {ACT_RUN}
 
@@ -325,12 +325,12 @@ end
 function ENT:SetCrawl(b)
 	if b then
 		self:VJ_ACT_PLAYACTIVITY(ACT_DISARM,true,false,true)
-		self.AnimTbl_IdleStand = {ACT_IDLE_SMG1}
+		self:SetIdleAnimation({ACT_IDLE_SMG1},true)
 		self.AnimTbl_Walk = {ACT_WALK_STIMULATED}
 		self.AnimTbl_Run = {ACT_RUN_STIMULATED}
 	else
 		self:VJ_ACT_PLAYACTIVITY(ACT_ARM,true,false,true)
-		self.AnimTbl_IdleStand = {ACT_IDLE}
+		self:SetIdleAnimation({ACT_IDLE},true)
 		self.AnimTbl_Walk = {ACT_WALK}
 		self.AnimTbl_Run = {ACT_RUN}
 	end
@@ -364,7 +364,7 @@ function ENT:CustomOnThink()
 				if self.IsCrawling then
 					self:SetCrawl(false)
 				end
-				self.AnimTbl_IdleStand = {ACT_FLY}
+				self:SetIdleAnimation({ACT_FLY},true)
 				self.NextChangeMovementT = CurTime() +3
 			elseif isFlying then
 				local tr = util.TraceLine({
@@ -378,7 +378,7 @@ function ENT:CustomOnThink()
 					self.NextIdleStandTime = 0
 					self:SetBodygroup(4,0)
 					self:SetBodygroup(9,0)
-					self.AnimTbl_IdleStand = {ACT_IDLE}
+					self:SetIdleAnimation({ACT_IDLE},true)
 					self.NextChangeMovementT = CurTime() +2
 				end
 			-- else

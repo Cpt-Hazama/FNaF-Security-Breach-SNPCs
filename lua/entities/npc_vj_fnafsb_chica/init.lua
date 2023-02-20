@@ -210,9 +210,12 @@ function ENT:CustomOnAcceptInput(key,activator,caller,data)
 	end
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
+local string_find = string.find
+local string_lower = string.lower
+--
 function ENT:OnPlayCreateSound(SoundData,SoundFile)
-	if string.find(string.lower(SoundFile),"jumpscare") then return end
-	if string.find(SoundFile,"fx") then return end
+	if string_find(string_lower(SoundFile),"jumpscare") then return end
+	if string_find(SoundFile,"fx") then return end
 	if SoundFile == "cpthazama/fnafsb/common/sfx_chicajam_guitarsolo_loop_b.wav" then return end
 	self.NextMouthT = CurTime() +VJ_SoundDuration(SoundFile)
 end
@@ -229,7 +232,7 @@ function ENT:CustomOnThink()
 	end
 end
 ---------------------------------------------------------------------------------------------------------------------------------------------
-function ENT:CustomAttack()
+function ENT:CustomOnThink()
 	local ent = self:GetEnemy()
 	local anim = self:GetActivity()
 	local dist = self.NearestPointToEnemyDistance
